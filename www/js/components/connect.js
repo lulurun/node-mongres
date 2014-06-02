@@ -27,9 +27,8 @@ var connect = Fractal.Component.extend({
     ["host", "port", "user", "password"].forEach(function(v){
       lastConnected[v] = lastConnected[v] || "";
     });
-    self.data = { last_conn: lastConnected };
+    self.data = lastConnected;
     Fractal.require("conn", function(data){
-      console.log(data);
       self.data.conns = data;
     });
     callback();

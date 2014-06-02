@@ -4,7 +4,7 @@ var layout = Fractal.Component.extend({
       $first.css("width", pos);
       $splitter.css("left", pos);
       $second.css("left", pos + $splitter.width());
-      $second.css("width", $(window).width() - pos - $splitter.width());
+      // $second.css("width", $(window).width() - pos - $splitter.width());
       $first.trigger("resize");
       $second.trigger("resize");
     };

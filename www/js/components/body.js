@@ -69,7 +69,6 @@ var contents = Fractal.Component.extend({
 });
 
 var basicInfo = Fractal.Component.extend({
-  loadOnce: true,
   compiledTemplate: (function(){
     var text = '{{#title}}<div class="panel panel-default">' +
       '<div class="panel-heading">{{title}}</div>' +
@@ -118,6 +117,24 @@ var serverStatus = basicInfo.extend({
 var replSetStatus = basicInfo.extend({
   title: "ReplSet Status",
   query: "conn/" + Fractal.env.conn + "/replSetGetstatus"
+});
+
+var db_list = Fractal.Component.extend({
+  getData: function(callback) {
+    var self = this;
+    var connId = Fractal.env.conn || MONGRES.currentConn;
+    if (!connId) return Fractal.next("connect");
+    Fractal.require("conn/" + Fractal.env.conn + "/db", function(data){
+      if (data && data.err) {
+        return Fractal.next("connect");
+      }
+      self.data = {
+        databases: data.databases,
+        removable: function() { return this.name !== "local"; }
+      };
+      callback();
+    });
+  }
 });
 
 var dbStats = basicInfo.extend({
