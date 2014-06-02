@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mongres Client</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<div data-role="component" data-name="main" />
+
+<script type="text/javascript" src="js/fractal.js"></script>
+<script type="text/javascript" src="js/fractal.app.js"></script>
+<script>
+Fractal(function(){
+  Fractal.require("js/app.js", function(){
+    var app = new MongresUI();
+    app.start();
+  });
+});
+</script>
+
+</body>
+</html>
+

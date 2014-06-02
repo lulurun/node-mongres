@@ -1,0 +1,12 @@
+{
+  "name": "node-mongres",
+  "description": "REST API Server for MongoDB",
+  "version": "0.0.1",
+  "author": "Liu Xiaolu <lulurun@gmail.com>",
+  "dependencies": {
+    "express": "*",
+    "body-parser": "*",
+    "morgan": "*",
+    "mongodb": "*"
+  }
+}

@@ -1,0 +1,20 @@
+<table class="table table-condensed">
+  <thead>
+    <tr>
+      {{#fields}}
+      <th>{{.}}</th>
+      {{/fields}}
+    </tr>
+  </thead>
+  <tbody>
+    {{#records}}
+    <tr>
+      {{#v}}
+      <td>{{.}}</td>
+      {{/v}}
+    </tr>
+    {{/records}}
+  </tbody>
+</table>
+
+

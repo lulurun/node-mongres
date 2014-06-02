@@ -1,0 +1,44 @@
+<style>
+.form-connect {
+  max-width: 350px;
+  padding-top: 100px;
+  margin: 0 auto;
+}
+.form-connect .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+  margin-bottom: -1px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+/*
+.form-connect .form-control:focus {
+  z-index: 2;
+}
+*/
+</style>
+
+{{#last_conn}}
+<div class="form-connect">
+  <ul>
+    {{#conns}}
+    <li><a href="#viewer&conn={{.}}">{{.}}</a></li>
+    {{/conns}}
+  </ul>
+
+  <div>
+    <input name="host" type="text" class="form-control" placeholder="Host   localhost" autofocus value="{{host}}"/>
+    <input name="port" type="text" class="form-control" placeholder="Port   27017" value="{{port}}"/>
+    <input name="user" type="text" class="form-control" placeholder="User" value="{{user}}"/>
+    <input name="password" type="password" class="form-control" placeholder="Password" value="{{password}}"/>
+  </div>
+  <button class="btn btn-lg btn-primary btn-block form-control" id="btn-connect">Connect</button>
+</div>
+{{/last_conn}}
