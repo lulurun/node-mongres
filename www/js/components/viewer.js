@@ -58,7 +58,7 @@ var viewer = layout.extend({
     self._super(name, $container);
     self.splitterInitPos = 300;
     self.first = { name: "sidebar" };
-    self.second = { name: "data_view", loadOnce: true };
+    self.second = { name: "body", loadOnce: true };
   }
 });
 

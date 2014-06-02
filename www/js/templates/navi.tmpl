@@ -1,0 +1,16 @@
+{{#enabled}}
+<ol class="breadcrumb">
+  {{#items}}
+
+  {{#active}}
+  <li class="active">{{name}}</li>
+  {{/active}}
+
+  {{^active}}
+  <li><a href="{{link}}">{{name}}</a></li>
+  {{/active}}
+
+  {{/items}}
+</ol>
+{{/enabled}}
+

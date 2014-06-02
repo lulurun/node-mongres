@@ -77,25 +77,12 @@ var StoreFactory = (function(){
     }
   };
 
-  proto.getDatabases = function(callback) {
-    var self = this;
-    var admin = self.conn.db("test").admin();
-    admin.listDatabases(function(err, dbs){
-      callback(dbs);
-    });
+  proto.admin = function(callback) {
+    return this.conn.db("test").admin();
   };
 
-  proto.getCollections = function(name, callback) {
-    var self = this;
-    var db = self.conn.db(name);
-    db.collectionNames(function(err, items){
-      callback(items);
-    });
-  };
-
-  proto.getCollection = function(db, col, callback) {
-    var self = this;
-    self.conn.db(db).collection(col, callback);
+  proto.db = function(name) {
+    return this.conn.db(name);
   };
 
   (function(){
@@ -162,28 +149,44 @@ app.get('/api/conn', function(req, res){
   res.json(StoreFactory.getAll());
 });
 
-// get database list
-app.get('/api/conn/:connid/db', function(req, res){
+app.all('/api/conn/:connid/*', function(req, res, next){
   var store = StoreFactory.get(req.params.connid);
   if (!store) res.json({err: "not connected"});
   else {
-    store.getDatabases(function(data){
-      res.json(data);
-    });
+    res.store = store;
+    next();
   }
+});
+
+// get connection info / buildInfo
+app.get('/api/conn/:connid/buildInfo', function(req, res){
+  res.store.admin().buildInfo(function(err, info){ res.json(info); });
+});
+
+// get connection info / serverStatus
+app.get('/api/conn/:connid/serverStatus', function(req, res){
+  res.store.admin().serverStatus(function(err, info){ res.json(info); });
+});
+
+// get connection info / replSetGetStatus
+app.get('/api/conn/:connid/replSetGetStatus', function(req, res){
+  res.store.admin().replSetGetStatus(function(err, info){ res.json(info); });
+});
+
+// get database list
+app.get('/api/conn/:connid/db', function(req, res){
+  res.store.admin().listDatabases(function(err, dbs){ res.json(dbs); });
+});
+
+// get db stats
+app.get('/api/conn/:connid/db/:db/stats', function(req, res){
+  res.store.db(req.params.db).stats(function(err, stats){ res.json(stats); });
 });
 
 // get collection list
 app.get('/api/conn/:connid/db/:db/col', function(req, res){
-  var store = StoreFactory.get(req.params.connid);
-  if (!store) res.json({err: "not connected"});
-  else {
-    store.getCollections(req.params.db, function(data){
-      res.json(data);
-    });
-  }
+  res.store.db(req.params.db).collectionNames(function(err, items){ res.json(items); });
 });
-
 
 function sendErr(res, err) {
   if (typeof(err) != "string") err = JSON.stringify(err);
@@ -199,7 +202,7 @@ function convertId(data) {
 
 // //////////
 // find
-app.get('/api/conn/:connId/db/:db/col/:col', function(req, res) {
+app.get('/api/conn/:connid/db/:db/col/:col', function(req, res) {
   var dbname = req.params.db;
   var colname = req.params.col;
   var query = req.param("query");
@@ -222,22 +225,18 @@ app.get('/api/conn/:connId/db/:db/col/:col', function(req, res) {
   query = query || {};
   options = options || {};
 
-  var store = StoreFactory.get(req.params.connId);
-  if (!store) res.json({err: "not connected"});
-  else {
-    store.getCollection(dbname, colname, function(err, col){
-      if (err) res.json({err: "failed to get col"});
-      else {
-        col.find(query, options, function(err, cursor) {
+  res.store.db(dbname).collection(colname, function(err, col){
+    if (err) res.json({err: "failed to get col"});
+    else {
+      col.find(query, options, function(err, cursor) {
+        if (err) return res.json({err: err});
+        cursor.toArray(function(err, docs){
           if (err) return res.json({err: err});
-          cursor.toArray(function(err, docs){
-            if (err) return res.json({err: err});
-            res.json(docs);
-          });
+          res.json(docs);
         });
-      }
-    });
-  }
+      });
+    }
+  });
 });
 
 

@@ -339,7 +339,7 @@
       self.$container = $container;
       var resetDisplay = self.$container.data("display");
       if (resetDisplay) self.$container.css("display", resetDisplay);
-      self.loadOnce = (self.$container.attr("load-once") === "true");
+      self.loadOnce = self.loadOnce || (self.$container.attr("load-once") === "true");
 
       self.name = name;
       self.rendered = false;
