@@ -1,0 +1,21 @@
+<p>
+<div class="btn-group">
+<button class="btn btn-default">
+  <span class="glyphicon glyphicon-refresh"></span>
+</button>
+<button class="btn btn-default">
+  <span class="glyphicon glyphicon-plus"></span>
+  DB
+</button>
+
+<a class="btn btn-default" href="#connect">
+  <span class="glyphicon glyphicon-flash"></span>
+  Connect
+</a>
+</div>
+</p>
+
+{{#databases}}
+<div data-role="component" data-name="db" data-dbname="{{name}}" data-resetdisplay="false"></div>
+{{/databases}}
+

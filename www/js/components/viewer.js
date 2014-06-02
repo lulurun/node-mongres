@@ -1,109 +1,64 @@
-var viewer = Fractal.Component.extend({
-  getData: function(callback) {
-    var self = this;
-    var connId = Fractal.env.conn || MONGRES.currentConn;
-    if (!connId) return Fractal.next("connect");
-    Fractal.require("conn/" + Fractal.env.conn + "/db", function(data){
-      if (data && data.err) {
-        return Fractal.next("connect");
-      }
-      self.data = data;
-      callback();
-    });
-  }
-});
+var layout = Fractal.Component.extend({
+  afterRender: (function(){
+    var __split = function($first, $second, $splitter, pos){
+      $first.css("width", pos);
+      $splitter.css("left", pos);
+      $second.css("left", pos + $splitter.width());
+      $second.css("width", $(window).width() - pos - $splitter.width());
+      $first.trigger("resize");
+      $second.trigger("resize");
+    };
 
-var db = Fractal.Component.extend({
-  init: function(name, $container) {
-    var self = this;
-    self._super(name, $container);
-    self.dbname = self.$container.data("dbname");
-  },
-  getData: function(callback) {
-    var self = this;
-    var query = "conn/" + Fractal.env.conn + "/db/" + self.dbname + "/col";
-    Fractal.require(query, function(data){
-      self.data = {
-        conn: Fractal.env.conn,
-        db: self.dbname,
-        userdb: self.dbname != "local",
-        collections: data,
-        colname: function(){
-          return  this.name.split(".").slice(1).join(".");
-        }
-      };
-      callback();
-    });
-  }
-});
+    return function(callback) {
+      var self = this;
+      var $first = self.$container.find(".layout-first");
+      var $second = self.$container.find(".layout-second");
+      var $splitter = self.$container.find(".layout-splitter");
 
-var query = Fractal.Component.extend({
-  init: function(name, $container) {
-    var self = this;
-    self._super(name, $container);
-    self.subscribe(Fractal.TOPIC.ENV_CHANGED, function(topic, data){
-      if (data.db || data.col) self.load();
-    });
-  },
-  getData: function(callback){
+      $splitter.bind("mousedown", function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        var mouseDown = ev.pageX;
+        var startPos = $splitter.offset().left;
+        console.log("Down", mouseDown, startPos);
+        $(document).bind("mousemove", function(ev){
+          ev.preventDefault();
+          ev.stopPropagation();
+          var pos = startPos + (ev.pageX - mouseDown);
+          __split($first, $second, $splitter, pos);
+        });
+        $(document).bind("mouseup", function(ev){
+          ev.preventDefault();
+          ev.stopPropagation();
+          var pos = startPos + (ev.pageX - mouseDown);
+          __split($first, $second, $splitter, pos);
+          $(document).unbind("mousemove");
+          $(document).unbind("mouseup");
+        })
+      });
+
+      __split($first, $second, $splitter, self.splitterInitPos);
+      callback();
+    }
+  })(),
+  getData: function(callback) {
     var self = this;
     self.data = {
-      conn: Fractal.env.conn,
-      db: Fractal.env.db,
-      col: Fractal.env.col,
-      selected: (Fractal.env.db && Fractal.env.col)
+      first: self.first,
+      second: self.second
     };
     callback();
   }
 });
 
-var data_table = Fractal.Component.extend({
+
+var viewer = layout.extend({
   init: function(name, $container) {
     var self = this;
     self._super(name, $container);
-    self.subscribe(Fractal.TOPIC.ENV_CHANGED, function(topic, data){
-      if (data.db || data.col) self.load();
-    });
-  },
-  getData: function(callback){
-    var self = this;
-    if (!Fractal.env.db || !Fractal.env.col) {
-      self.data = {};
-      return callback();
-    }
-    var query = "conn/" + Fractal.env.conn + "/db/" + Fractal.env.db + "/col/" + Fractal.env.col;
-    Fractal.require(query, {forced: true}, function(data){
-      if (data.err) {
-        console.log(data.err);
-        return callback();
-      }
-      var fieldMask = {};
-      var fields = [];
-      var records = [];
-      data.forEach(function(v){
-        var f = MONGRES.flatten(v);
-        var values = [];
-        for (var i in f) {
-          if (!(i in fieldMask)) {
-            fieldMask[i] = fields.length;
-            fields.push(i);
-          }
-          values[fieldMask[i]] = f[i] + '';
-        }
-        records.push({ v: values });
-      });
-
-      var max = fields.length;
-      records.forEach(function(v){
-        var d = max - v.v.length;
-        while(d--) v.v.push("");
-      });
-
-      self.data = {
-        fields: fields,
-        records: records
-      };
-      callback();
-    });
+    self.splitterInitPos = 300;
+    self.first = { name: "sidebar" };
+    self.second = { name: "data_view", loadOnce: true };
   }
 });
+

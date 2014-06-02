@@ -337,8 +337,8 @@
       var self = this;
       self._id = ++CompIdGen;
       self.$container = $container;
-      if (self.$container.data("resetdisplay") !== false)
-        self.$container.css("display", "inline");
+      var resetDisplay = self.$container.data("display");
+      if (resetDisplay) self.$container.css("display", resetDisplay);
       self.loadOnce = (self.$container.attr("load-once") === "true");
 
       self.name = name;
