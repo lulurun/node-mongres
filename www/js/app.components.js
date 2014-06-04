@@ -52,7 +52,6 @@ Fractal(function(){
           ev.stopPropagation();
           var mouseDown = ev.pageX;
           var startPos = $splitter.offset().left;
-          console.log("Down", mouseDown, startPos);
           $(document).bind("mousemove", function(ev){
             ev.preventDefault();
             ev.stopPropagation();
