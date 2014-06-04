@@ -69,17 +69,14 @@ var contents = Fractal.Component.extend({
 });
 
 var basicInfo = Fractal.Component.extend({
-  compiledTemplate: (function(){
-    var text = '{{#title}}<div class="panel panel-default">' +
-      '<div class="panel-heading">{{title}}</div>' +
-      '  <div class="panel-body">' +
-      '    <dl class="dl-horizontal">' +
-      '    {{#fields}}<dt>{{key}}&nbsp;</dt><dd>{{val}}&nbsp;</dd>{{/fields}}' +
-      '    </dl>' +
-      '  </div>' +
-      '</div>{{/title}}';
-    return Hogan.compile(text);
-  })(),
+  template: '{{#title}}<div class="panel panel-default">' +
+    '<div class="panel-heading">{{title}}</div>' +
+    '  <div class="panel-body">' +
+    '    <dl class="dl-horizontal">' +
+    '    {{#fields}}<dt>{{key}}&nbsp;</dt><dd>{{val}}&nbsp;</dd>{{/fields}}' +
+    '    </dl>' +
+    '  </div>' +
+    '</div>{{/title}}',
   getData: function(callback) {
     var self = this;
     if (!self.title || !self.query) {

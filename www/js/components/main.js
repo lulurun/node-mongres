@@ -3,12 +3,12 @@ var main = Fractal.Component.extend({
     var self = this;
     self._super(name, $container);
     self.subscribe(Fractal.TOPIC.ENV_CHANGED, function(topic, data){
-      if (data.page) self.load();
+      if (!self.rendered) return;
+      if (data.page && data.page != self.data.page) self.load();
     });
   },
   getData: function(callback) {
-    if (!Fractal.env.page) Fractal.env.page = "viewer";
-    this.data = { page: Fractal.env.page };
+    this.data = { page: Fractal.env.page || "connect" };
     callback();
   }
 });
