@@ -10,6 +10,7 @@ var MongresUI = Fractal.App.extend({
       "//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css",
       "//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js",
       "css/app.css",
+      "js/app.components.js",
     ];
   },
   onSetup: function(){}
