@@ -26,7 +26,7 @@ var navi = Fractal.Component.extend({
     if (Fractal.env.col) {
       items.push({
         link: "#viewer&conn=" + Fractal.env.conn + "&db=" + Fractal.env.db + "&col=" + Fractal.env.col,
-        name: Fractal.env.conn
+        name: Fractal.env.col
       })
     }
 

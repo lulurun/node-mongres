@@ -54,7 +54,7 @@ var MONGRES = (function(){
           recurse(cur[p], prop ? (prop + "." + p) : p);
         }
         if (isEmpty && prop)
-          result[prop] = {};
+          result[prop] = "{}";
       }
     }
     recurse(data, "");
