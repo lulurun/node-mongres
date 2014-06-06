@@ -188,6 +188,13 @@ app.get('/api/conn/:connid/db/:db/col', function(req, res){
   res.store.db(req.params.db).collectionNames(function(err, items){ res.json(items); });
 });
 
+// get db stats
+app.get('/api/conn/:connid/db/:db/col/:col/stats', function(req, res){
+  res.store.db(req.params.db).collection(req.params.col, function(err, col) {
+    col.stats(function(err, stats){ res.json(stats); });
+  });
+});
+
 function sendErr(res, err) {
   if (typeof(err) != "string") err = JSON.stringify(err);
   res.send(JSON.stringify({ok: 0, err: err}));

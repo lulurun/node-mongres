@@ -90,12 +90,12 @@ Fractal("basicInfo", Fractal.Component.extend({
     '</div>{{/title}}',
   getData: function(callback) {
     var self = this;
-    if (!self.title || !self.query) {
-      console.error(self.name, "missing title/query");
+    if (!self.title || !self.getQuery) {
+      console.error(self.name, "missing title/getQuery");
       callback();
     }
     else {
-      Fractal.require(self.query, function(data){
+      Fractal.require(self.getQuery(), function(data){
         var fields = [];
         for (var i in data) {
           fields.push({ key:i, val:data[i] });
