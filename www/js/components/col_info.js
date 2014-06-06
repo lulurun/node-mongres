@@ -13,13 +13,13 @@ Fractal("col_info", Fractal.Component.extend({
     self.subscribe(Fractal.TOPIC.ENV_CHANGED, function(topic, data){
       if (!self.rendered) return;
       if (data.show) {
-        self.componentName = Fractal.env.show || "colStats";
+        self.componentName = Fractal.env.show || "data_table";
         self.load();
       }
     });
   },
   getData: function(callback) {
-    this.data = { name: this.componentName || "colStats" };
+    this.data = { name: this.componentName || Fractal.env.show || "data_table" };
     callback();
   }
 }));

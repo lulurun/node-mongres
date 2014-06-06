@@ -31,10 +31,10 @@ Fractal("navi", Fractal.Component.extend({
         name: Fractal.env.col
       });
       items.push({
-        link: "#viewer&conn=" + Fractal.env.conn + "&db=" + Fractal.env.db + "&col=" + Fractal.env.col + "&show=data_table",
-        name: "data"
+        link: "#viewer&conn=" + Fractal.env.conn + "&db=" + Fractal.env.db + "&col=" + Fractal.env.col + "&show=colStats",
+        name: "Stats"
       });
-      if (Fractal.env.show == "data_table") active = 3;
+      if (Fractal.env.show == "colStats") active = 3;
       else active = 2;
     }
 

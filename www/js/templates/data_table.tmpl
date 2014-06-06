@@ -1,20 +1,31 @@
-<table class="table table-condensed">
+<table class="table table-condensed table-hover">
   <thead>
-    <tr>
-      {{#fields}}
-      <th>{{.}}</th>
-      {{/fields}}
-    </tr>
   </thead>
   <tbody>
-    {{#records}}
-    <tr>
-      {{#v}}
-      <td>{{.}}</td>
-      {{/v}}
-    </tr>
-    {{/records}}
   </tbody>
 </table>
 
+<button class="btn btn-block btn-link btn-load_more">Load More ...</button>
+
+{{=<% %>=}}
+
+<script type="text/template" id="template-data_table_thead">
+  <tr>
+    {{#fields}}
+    <th data-col="{{.}}">{{.}}</th>
+    {{/fields}}
+  </tr>
+</script>
+
+<script type="text/template" id="template-data_table_tbody">
+  {{#records}}
+  <tr data-id="{{_id}}">
+    {{#values}}
+    <td data-col="{{k}}">{{v}}</td>
+    {{/values}}
+  </tr>
+  {{/records}}
+</script>
+
+<%={{ }}=%>
 
