@@ -1,6 +1,6 @@
-var body = Fractal.Component.extend({});
+Fractal("body", Fractal.Component.extend({}));
 
-var navi = Fractal.Component.extend({
+Fractal("navi", Fractal.Component.extend({
   init: function(name, $container) {
     var self = this;
     self._super(name, $container);
@@ -37,9 +37,9 @@ var navi = Fractal.Component.extend({
     };
     callback();
   }
-});
+}));
 
-var contents = Fractal.Component.extend({
+Fractal("contents", Fractal.Component.extend({
   init: function(name, $container) {
     var self = this;
     self._super(name, $container);
@@ -66,5 +66,5 @@ var contents = Fractal.Component.extend({
     }
     callback();
   }
-});
+}));
 

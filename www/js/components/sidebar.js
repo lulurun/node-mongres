@@ -1,4 +1,19 @@
-var db = Fractal.Component.extend({
+Fractal("sidebar", Fractal.Component.extend({
+  getData: function(callback) {
+    var self = this;
+    var connId = Fractal.env.conn || MONGRES.currentConn;
+    if (!connId) return Fractal.next("connect");
+    Fractal.require("conn/" + Fractal.env.conn + "/db", function(data){
+      if (data && data.err) {
+        return Fractal.next("connect");
+      }
+      self.data = data;
+      callback();
+    });
+  }
+}));
+
+Fractal("db", Fractal.Component.extend({
   init: function(name, $container) {
     var self = this;
     self._super(name, $container);
@@ -20,19 +35,5 @@ var db = Fractal.Component.extend({
       callback();
     });
   }
-});
+}));
 
-var sidebar = Fractal.Component.extend({
-  getData: function(callback) {
-    var self = this;
-    var connId = Fractal.env.conn || MONGRES.currentConn;
-    if (!connId) return Fractal.next("connect");
-    Fractal.require("conn/" + Fractal.env.conn + "/db", function(data){
-      if (data && data.err) {
-        return Fractal.next("connect");
-      }
-      self.data = data;
-      callback();
-    });
-  }
-});

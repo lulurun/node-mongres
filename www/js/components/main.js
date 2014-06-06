@@ -1,4 +1,4 @@
-var main = Fractal.Component.extend({
+Fractal("main", Fractal.Component.extend({
   init: function(name, $container) {
     var self = this;
     self._super(name, $container);
@@ -11,5 +11,5 @@ var main = Fractal.Component.extend({
     this.data = { page: Fractal.env.page || "connect" };
     callback();
   }
-});
+}));
 

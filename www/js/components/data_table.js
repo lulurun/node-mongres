@@ -1,4 +1,4 @@
-var data_table = Fractal.Component.extend({
+Fractal("data_table", Fractal.Component.extend({
   init: function(name, $container) {
     var self = this;
     self._super(name, $container);
@@ -47,5 +47,5 @@ var data_table = Fractal.Component.extend({
       callback();
     });
   }
-});
+}));
 

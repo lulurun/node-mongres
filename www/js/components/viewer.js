@@ -1,4 +1,4 @@
-var viewer = Fractal.Components.layout_vsp2.extend({
+Fractal("viewer", Fractal.Components.layout_vsp2.extend({
   init: function(name, $container) {
     var self = this;
     self._super(name, $container);
@@ -6,5 +6,6 @@ var viewer = Fractal.Components.layout_vsp2.extend({
     self.first = { name: "sidebar" };
     self.second = { name: "body", loadOnce: true };
   }
-});
+}));
+
 

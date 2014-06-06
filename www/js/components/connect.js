@@ -1,4 +1,4 @@
-var connect = Fractal.Component.extend({
+Fractal("connect", Fractal.Component.extend({
   afterRender: function(callback) {
     var self = this;
     $('#btn-connect').click(function(){
@@ -33,4 +33,4 @@ var connect = Fractal.Component.extend({
     });
     callback();
   }
-});
+}));
