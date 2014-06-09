@@ -1,4 +1,4 @@
-Fractal("conn_info", Fractal.Component.extend({}));
+Fractal("conn_info", Fractal.Component.extend({loadOnce: true}));
 
 Fractal("buildInfo", Fractal.Components.basicInfo.extend({
   title: "Build Info",

@@ -34,8 +34,7 @@ Fractal("navi", Fractal.Component.extend({
         link: "#viewer&conn=" + Fractal.env.conn + "&db=" + Fractal.env.db + "&col=" + Fractal.env.col + "&show=colStats",
         name: "Stats"
       });
-      if (Fractal.env.show == "colStats") active = 3;
-      else active = 2;
+      active = (Fractal.env.show == "colStats") ? 3 : 2;
     }
 
     if (items.length) items[active].active = true;
@@ -47,33 +46,39 @@ Fractal("navi", Fractal.Component.extend({
   }
 }));
 
-Fractal("contents", Fractal.Component.extend({
-  init: function(name, $container) {
-    var self = this;
-    self._super(name, $container);
-    self.subscribe(Fractal.TOPIC.ENV_CHANGED, function(topic, data){
-      if (data.conn || data.db || data.col) self.load();
-    });
+Fractal("contents", Fractal.Components.Router.extend({
+  onEnvChange: function(data){
+    if (data.conn || data.db || data.col || data.show) this.load();
   },
   getData: function(callback){
     var self = this;
-
     var connId = Fractal.env.conn || MONGRES.currentConn;
     if (!connId) return Fractal.next("connect");
     self.data = {};
-
     if (Fractal.env.db && Fractal.env.col) {
-      //self.data.name = "data_table";
-      self.data.name = "col_info"
+      if (Fractal.env.show == "colStats") self.data.componentName = "colStats";
+      else self.data.componentName = "data_table";
     } else if (Fractal.env.db && !Fractal.env.col) {
-      self.data.name = "db_info";
+      self.data.componentName = "dbStats";
     } else if (!Fractal.env.db && !Fractal.env.col) {
-      self.data.name = "conn_info";
+      self.data.componentName = "conn_info";
     } else {
       console.error("something wrong");
       return Fractal.next("connect");
     }
     callback();
+  }
+}));
+
+Fractal("dbStats", Fractal.Components.basicInfo.extend({
+  title: "DB Stats",
+  getQuery: function(){ return "conn/" + Fractal.env.conn + "/db/" + Fractal.env.db + "/stats"; }
+}));
+
+Fractal("colStats", Fractal.Components.basicInfo.extend({
+  title: "Collection Stats",
+  getQuery: function(){
+    return "conn/" + Fractal.env.conn + "/db/" + Fractal.env.db + "/col/" + Fractal.env.col + "/stats";
   }
 }));
 

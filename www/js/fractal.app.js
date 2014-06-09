@@ -70,6 +70,21 @@ Fractal(function(){
     return env;
   })();
 
+  Fractal.Components.Router = Fractal.Component.extend({
+    template: '<div data-role="component" data-name="{{componentName}}" />',
+    init: function(name, $container) {
+      var self = this;
+      self._super(name, $container);
+      self.subscribe(Fractal.TOPIC.ENV_CHANGED, function(topic, data){
+        if (!self.rendered) return;
+        self.onEnvChange(data);
+      });
+    },
+    onEnvChange: function(data) {
+      throw new Error("to be extended");
+    }
+  });
+
   Fractal.platform = (function(){
     if (window.location.href.indexOf("http") == 0) {
       return "www";

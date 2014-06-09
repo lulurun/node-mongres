@@ -40,9 +40,9 @@ Fractal("layout_vsp2", Fractal.Component.extend({
 
     return function(callback) {
       var self = this;
-      var $first = self.$container.find(".layout-first");
-      var $second = self.$container.find(".layout-second");
-      var $splitter = self.$container.find(".layout-splitter");
+      var $first = $(".layout-first");
+      var $second = $(".layout-second");
+      var $splitter = $(".layout-splitter");
 
       $splitter.bind("mousedown", function(ev){
         ev.preventDefault();
@@ -80,6 +80,7 @@ Fractal("layout_vsp2", Fractal.Component.extend({
 }));
 
 Fractal("basicInfo", Fractal.Component.extend({
+  loadOnce: true,
   template: '{{#title}}<div class="panel panel-default">' +
     '<div class="panel-heading">{{title}}</div>' +
     '  <div class="panel-body">' +
