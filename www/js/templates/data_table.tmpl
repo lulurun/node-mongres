@@ -14,7 +14,7 @@
 <script type="text/template" id="template-data_table_col_selector">
   <select class="multiselect" multiple="multiple">
     {{#fields}}
-    <option value="{{.}}" selected>{{.}}</option>
+    <option value="{{value}}" selected>{{displayText}}</option>
     {{/fields}}
   </select>
 </script>
@@ -22,7 +22,7 @@
 <script type="text/template" id="template-data_table_thead">
   <tr>
     {{#fields}}
-    <th data-col="{{.}}">{{.}}</th>
+    <th class="{{classValue}}">{{#displayParts}}{{.}}<br>{{/displayParts}}</th>
     {{/fields}}
   </tr>
 </script>
@@ -31,7 +31,7 @@
   {{#records}}
   <tr data-id="{{_id}}">
     {{#values}}
-    <td data-col="{{k}}">{{v}}</td>
+    <td class="{{k}}">{{v}}</td>
     {{/values}}
   </tr>
   {{/records}}

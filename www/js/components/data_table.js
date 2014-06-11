@@ -57,28 +57,39 @@ Fractal("data_table", Fractal.Component.extend({
       flattenData.forEach(function(d){
         r = {_id: d._id, values: []};
         fields.forEach(function(f){
-          r.values.push({k: f, v: d[f]});
+          r.values.push({k: "col-" + f.replace(/\./g, "_"), v: d[f]});
         });
         records.push(r);
       });
 
       if (insertCols.length) {
-        var selector = self.selectorTemplate.render({fields: fields});
+        var selectorFields = fields.map(function(v){
+          return {
+            displayText: v,
+            value: "col-" + v.replace(/\./g, "_")
+          }
+        });
+        var selector = self.selectorTemplate.render({fields: selectorFields});
         self.$container.find("#col-selector").html(selector);
         $('.multiselect').multiselect({
           nonSelectedText: 'Show/Hide columns',
           onChange: function($e, checked){
-            var col = $e.val();
+            var col = "." + $e.val();
             if (checked) {
-              self.$container.find('th[data-col="' + col + '"]').show();
-              self.$container.find('td[data-col="' + col + '"]').show();
+              self.$container.find(col).show();
             } else {
-              self.$container.find('th[data-col="' + col + '"]').hide();
-              self.$container.find('td[data-col="' + col + '"]').hide();
+              self.$container.find(col).hide();
             }
           }
         });
-        var thead = self.theadTemplate.render({fields: fields});
+        var headFields = fields.map(function(v){
+          return {
+            //value: v,
+            displayParts: v.split("."),
+            classValue: "col-" + v.replace(/\./g, "_")
+          };
+        });
+        var thead = self.theadTemplate.render({ fields: headFields });
         self.$container.find("thead").html(thead);
         if (self.current > 0) {
           // col changed, update existing data
