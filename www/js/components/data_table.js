@@ -12,17 +12,19 @@ Fractal("data_table", Fractal.Component.extend({
       self.theadTemplate = Hogan.compile(data);
       Fractal.getTemplate("data_table_tbody", function(data){
         self.tbodyTemplate = Hogan.compile(data);
-        $('.btn-load_more').click(function(){
-          self.update();
+        Fractal.getTemplate("data_table_col_selector", function(data){
+          self.selectorTemplate = Hogan.compile(data);
+          $('.btn-load_more').click(function(){
+            self.update();
+          });
+          self.update(callback);
         });
-        self.update(callback);
       });
     });
   },
   update: function(callback) {
     var self = this;
     $('.btn-load_more').hide();
-
     self.options.skip = self.current;
     var query = self.query + "?options=" + encodeURIComponent(JSON.stringify(self.options));
     Fractal.require(query, {force: true}, function(data){
@@ -61,12 +63,26 @@ Fractal("data_table", Fractal.Component.extend({
       });
 
       if (insertCols.length) {
+        var selector = self.selectorTemplate.render({fields: fields});
+        self.$container.find("#col-selector").html(selector);
+        $('.multiselect').multiselect({
+          nonSelectedText: 'Show/Hide columns',
+          onChange: function($e, checked){
+            var col = $e.val();
+            if (checked) {
+              self.$container.find('th[data-col="' + col + '"]').show();
+              self.$container.find('td[data-col="' + col + '"]').show();
+            } else {
+              self.$container.find('th[data-col="' + col + '"]').hide();
+              self.$container.find('td[data-col="' + col + '"]').hide();
+            }
+          }
+        });
         var thead = self.theadTemplate.render({fields: fields});
         self.$container.find("thead").html(thead);
         if (self.current > 0) {
           // col changed, update existing data
           for (var i in insertCols) {
-            console.log(i, insertCols);
             var $after = self.$container.find('td[data-col="' + insertCols[i].after + '"]');
             var $me = $('<td data-col="' + insertCols[i].me + '"></td>');
             $after.after($me);
@@ -88,19 +104,25 @@ Fractal("data_table", Fractal.Component.extend({
   },
   getData: function(callback){
     var self = this;
-    if (!Fractal.env.db || !Fractal.env.col) {
-      self.data = {};
-      return callback();
-    }
-    self.query = "conn/" + Fractal.env.conn + "/db/" + Fractal.env.db + "/col/" + Fractal.env.col;
-    var countQuery = self.query + "/stats";
-    Fractal.require(countQuery, {forced: true}, function(data){
-      self.total = data.count;
-      self.current = 0;
-      self.fieldMask = {};
-      self.options = { limit: 100 };
-      self.allData = {};
-      callback();
+    self.current = 0;
+
+    Fractal.require([
+      "bower_components/bootstrap-multiselect/js/bootstrap-multiselect.js",
+      "bower_components/bootstrap-multiselect/css/bootstrap-multiselect.css"
+    ], function(){
+      if (!Fractal.env.db || !Fractal.env.col) {
+        self.data = {};
+        return callback();
+      }
+      self.query = "conn/" + Fractal.env.conn + "/db/" + Fractal.env.db + "/col/" + Fractal.env.col;
+      var countQuery = self.query + "/stats";
+      Fractal.require(countQuery, {forced: true}, function(data){
+        self.total = data.count;
+        self.fieldMask = {};
+        self.options = { limit: 100 };
+        self.allData = {};
+        callback();
+      });
     });
   }
 }));

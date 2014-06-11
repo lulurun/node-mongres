@@ -1,3 +1,5 @@
+<div id="col-selector"></div>
+
 <table class="table table-condensed table-hover">
   <thead>
   </thead>
@@ -8,6 +10,14 @@
 <button class="btn btn-block btn-link btn-load_more">Load More ...</button>
 
 {{=<% %>=}}
+
+<script type="text/template" id="template-data_table_col_selector">
+  <select class="multiselect" multiple="multiple">
+    {{#fields}}
+    <option value="{{.}}" selected>{{.}}</option>
+    {{/fields}}
+  </select>
+</script>
 
 <script type="text/template" id="template-data_table_thead">
   <tr>
