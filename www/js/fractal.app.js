@@ -71,17 +71,31 @@ Fractal(function(){
   })();
 
   Fractal.Components.Router = Fractal.Component.extend({
+    getComponentName: function(changedEnv, callback) { throw new Error("to be extended"); },
     template: '<div data-role="component" data-name="{{componentName}}" />',
     init: function(name, $container) {
       var self = this;
       self._super(name, $container);
       self.subscribe(Fractal.TOPIC.ENV_CHANGED, function(topic, data){
         if (!self.rendered) return;
-        self.onEnvChange(data);
+        self.getComponentName(data, function(componentName){
+          if (self.data && self.data.componentName !== componentName) {
+            self.data = { componentName: componentName };
+            self.load();
+          }
+        });
       });
     },
-    onEnvChange: function(data) {
-      throw new Error("to be extended");
+    getData: function(callback) {
+      var self = this;
+      if (!self.data) {
+        self.getComponentName({}, function(componentName){
+          self.data = { componentName: componentName };
+          callback();
+        });
+      } else {
+        callback();
+      }
     }
   });
 

@@ -47,26 +47,22 @@ Fractal("navi", Fractal.Component.extend({
 }));
 
 Fractal("contents", Fractal.Components.Router.extend({
-  onEnvChange: function(data){
-    if (data.conn || data.db || data.col || data.show) this.load();
-  },
-  getData: function(callback){
-    var self = this;
+  getComponentName: function(data, callback){
     var connId = Fractal.env.conn || MONGRES.currentConn;
-    if (!connId) return Fractal.next("connect");
-    self.data = {};
-    if (Fractal.env.db && Fractal.env.col) {
-      if (Fractal.env.show == "colStats") self.data.componentName = "colStats";
-      else self.data.componentName = "data_table";
-    } else if (Fractal.env.db && !Fractal.env.col) {
-      self.data.componentName = "dbStats";
-    } else if (!Fractal.env.db && !Fractal.env.col) {
-      self.data.componentName = "conn_info";
-    } else {
-      console.error("something wrong");
+    if (!connId) {
+      console.error("no connection");
       return Fractal.next("connect");
     }
-    callback();
+    var componentName = "";
+    if (Fractal.env.db && Fractal.env.col) {
+      if (Fractal.env.show == "colStats") componentName = "colStats";
+      else componentName = "data_table";
+    } else if (Fractal.env.db && !Fractal.env.col) {
+      componentName = "dbStats";
+    } else {
+      componentName = "conn_info";
+    }
+    callback(componentName);
   }
 }));
 
