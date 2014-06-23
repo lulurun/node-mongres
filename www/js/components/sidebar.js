@@ -7,7 +7,7 @@ Fractal("sidebar", Fractal.Component.extend({
       return Fractal.next("connect");
     }
     Fractal.require("conn/" + Fractal.env.conn + "/db", function(data){
-      if (data && data.err) {
+      if (!data || data.err) {
         console.error("can not get db list", data);
         return Fractal.next("connect");
       }
