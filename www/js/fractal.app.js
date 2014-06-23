@@ -120,8 +120,7 @@ Fractal(function(){
       if (self.TEMPLATE_ENGINE) Fractal.TEMPLATE_ENGINE = self.TEMPLATE_ENGINE;
       if (self.SOURCE_ROOT) Fractal.SOURCE_ROOT = self.SOURCE_ROOT;
       if (self.API_ROOT) Fractal.API_ROOT = self.API_ROOT;
-      if (self.PREFIX)
-        for (var i in self.PREFIX) Fractal.PREFIX[i] = self.PREFIX[i];
+      if (self.PREFIX) for (var i in self.PREFIX) Fractal.PREFIX[i] = self.PREFIX[i];
       Fractal.require([Fractal.DOM_PARSER, Fractal.TEMPLATE_ENGINE], function(){
         $(function(){
           self.REQUIRE_LIST = self.REQUIRE_LIST || [];
