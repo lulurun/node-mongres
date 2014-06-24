@@ -23,7 +23,7 @@
     }
   };
   // Settings
-  Fractal.API_ROOT = window.location.pathname.slice(0, -1);
+  Fractal.API_ROOT = window.location.pathname;
   Fractal.SOURCE_ROOT = Fractal.API_ROOT;
   Fractal.DOM_PARSER = "//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js";
   Fractal.TEMPLATE_ENGINE = "//cdnjs.cloudflare.com/ajax/libs/hogan.js/3.0.0/hogan.js";
@@ -32,10 +32,7 @@
     COMPONENT_LOADED_CHILDREN: "Fractal.component.loaded.children",
     DATA_UPDATED: "Fractal.data.updated"
   };
-  Fractal.PREFIX = {
-    component: "",
-    template: "",
-  };
+  Fractal.PREFIX = {}; // component, template
   // get external resources
   Fractal.require = (function(){
     var getByAddingElement = function(element, callback) {
@@ -86,10 +83,11 @@
       return Ext2Type[ext] || "json";
     };
     var getUrl = function(type, name) {
+      if (name.indexOf("http") === 0 || name.indexOf("//") === 0) return name;
+      if (name.indexOf(".") === 0) return window.location.pathname + name;
       var base = (type === "json") ? Fractal.API_ROOT : Fractal.SOURCE_ROOT;
-      if (name.indexOf("/") === 0) return base + name;
-      else if (name.indexOf(".") === 0) return window.location.pathname + name;
-      else return base + (Fractal.PREFIX[type] || "") + name;
+      if (name.indexOf("/") === 0) return base + name.slice(1);
+      return base + (Fractal.PREFIX[type] || "") + name;
     };
     var Type2Getter = {
       "script": function(url, callback) {
