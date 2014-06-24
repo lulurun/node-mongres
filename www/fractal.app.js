@@ -25,6 +25,7 @@ Fractal(function(){
   };
 
   Fractal.next = function(page, params) {
+    console.debug("Fractal.next", page, params);
     params = params || {};
     params.page = page;
     window.location.hash = "#" + Fractal.encodeParam(params);

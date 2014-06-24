@@ -1,15 +1,15 @@
 var MongresUI = Fractal.App.extend({
   init: function(){
     this.PREFIX = {
-      component: "js/components/",
-      template: "js/templates/",
+      component: "components/",
+      template: "templates/",
       json: "api/",
     };
     this.REQUIRE_LIST = [
       "//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css",
       "//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js",
       "css/app.css",
-      "js/app.components.js",
+      "app.components.js",
     ];
   },
   onSetup: function(){}
