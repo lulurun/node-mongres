@@ -27,7 +27,7 @@ Fractal("data_table", Fractal.Component.extend({
     $('.btn-load_more').hide();
     self.options.skip = self.current;
     var query = self.query + "?options=" + encodeURIComponent(JSON.stringify(self.options));
-    Fractal.require(query, {force: true}, function(data){
+    Fractal.require(query, function(data){
       // TODO if (data.err) { ... }
       var fieldChanged = {};
       var flattenData = [];
@@ -127,7 +127,7 @@ Fractal("data_table", Fractal.Component.extend({
       }
       self.query = "conn/" + Fractal.env.conn + "/db/" + Fractal.env.db + "/col/" + Fractal.env.col;
       var countQuery = self.query + "/stats";
-      Fractal.require(countQuery, {forced: true}, function(data){
+      Fractal.require(countQuery, function(data){
         self.total = data.count;
         self.fieldMask = {};
         self.options = { limit: 100 };
