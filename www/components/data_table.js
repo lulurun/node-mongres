@@ -8,18 +8,18 @@ Fractal("data_table", Fractal.Component.extend({
   },
   afterRender: function(callback) {
     var self = this;
-    Fractal.getTemplate("data_table_thead", function(data){
-      self.theadTemplate = Hogan.compile(data);
-      Fractal.getTemplate("data_table_tbody", function(data){
-        self.tbodyTemplate = Hogan.compile(data);
-        Fractal.getTemplate("data_table_col_selector", function(data){
-          self.selectorTemplate = Hogan.compile(data);
-          $('.btn-load_more').click(function(){
-            self.update();
-          });
-          self.update(callback);
-        });
+    Fractal.getTemplate([
+      "data_table_thead",
+      "data_table_tbody",
+      "data_table_col_selector"
+    ], function(data){
+      self.theadTemplate = data["data_table_thead"];
+      self.tbodyTemplate = data["data_table_tbody"];
+      self.selectorTemplate = data["data_table_col_selector"];
+      $('.btn-load_more').click(function(){
+        self.update();
       });
+      self.update(callback);
     });
   },
   update: function(callback) {
