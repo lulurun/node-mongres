@@ -56,7 +56,7 @@ Fractal("contents", Fractal.Components.Router.extend({
     var componentName = "";
     if (Fractal.env.db && Fractal.env.col) {
       if (Fractal.env.show == "colStats") componentName = "colStats";
-      else componentName = "data_table";
+      else componentName = "data_table2";
     } else if (Fractal.env.db && !Fractal.env.col) {
       componentName = "dbStats";
     } else {

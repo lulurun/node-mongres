@@ -66,5 +66,26 @@ var MONGRES = (function(){
     });
   };
 
+  MONGRES.Settings = (function(){
+    var Settings = function(name){
+      this.name = "Settings." + name;
+    };
+    var proto = Settings.prototype;
+    proto.clear = function() { localStorage.removeItem(this.name); };
+    proto.getAll = function() {
+      var data = localStorage.getItem(this.name);
+      if (data) return JSON.parse(data);
+      return null;
+    };
+    proto.setAll = function(data) { localStorage.setItem(this.name, JSON.stringify(data)); };
+    proto.get = function(key) { return this.getAll()[key]; };
+    proto.set = function(key, value) {
+      var data = this.getAll() || {};
+      data[key] = value;
+      this.setAll(data);
+    };
+    return Settings;
+  })();
+
   return MONGRES;
 })();
