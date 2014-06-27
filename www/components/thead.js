@@ -1,7 +1,10 @@
-Fractal("thead", Fractal.Component.extend({
-  template: '<tr>' +
+Fractal("thead", Fractal.Components.table_part.extend({
+  template: '  <tr>' +
     '    {{#fields}}' +
-    '    <th class="{{classValue}}">{{#displayParts}}{{.}}<br>{{/displayParts}}</th>' +
+    '    <th class="{{classValue}} {{#hide}}hide{{/hide}}" data-value="{{value}}">' +
+    '      <span class="glyphicon glyphicon-remove-circle btn-remove_col" style="opacity:0.3;" /><br>' +
+    '      {{#parts}}{{.}}<br>{{/parts}}' +
+    '    </th>' +
     '    {{/fields}}' +
     '  </tr>',
   init: function(name, $container) {
@@ -11,11 +14,18 @@ Fractal("thead", Fractal.Component.extend({
     self.subscribe(Fractal.TOPIC.DATA_TABLE.HEAD_UPDATED, function(topic, data){
       if (data.length !== self.fields.length) {
         self.fields = data;
+
+        var config = getColumnConfig().getAll();
+        var hide = config ? function(v){
+          return (v in config && !config[v]);
+        } : function(){ return false; };
         self.data = {
-          fields: data.map(function(f){
+          fields: data.map(function(v){
             return {
-              displayParts: f.v.split("."),
-              classValue: "col-" + f.escaped
+              value: v,
+              parts: v.split("."),
+              classValue: col2Class(v),
+              hide: hide(v),
             };
           })
         };
@@ -23,15 +33,20 @@ Fractal("thead", Fractal.Component.extend({
       }
     });
     self.subscribe(Fractal.TOPIC.DATA_TABLE.SHOW_COLUMN, function(topic, data){
-      self.$container.find(".col-" + data).show();;
+      self.showColumn(data);
     });
     self.subscribe(Fractal.TOPIC.DATA_TABLE.HIDE_COLUMN, function(topic, data){
-      self.$container.find(".col-" + data).hide();;
+      self.hideColumn(data);
     });
   },
-  getData: function(callback) {
-    // TODO get fields from localStorage
+  afterRender: function(callback) {
+    var self = this;
+    self.$container.find(".btn-remove_col").click(function(){
+      var col = $(this).closest("th").data("value");
+      self.publish(Fractal.TOPIC.DATA_TABLE.HIDE_COLUMN, col);
+      getColumnConfig().set(col, false);
+    });
     callback();
-  },
+  }
 }));
 

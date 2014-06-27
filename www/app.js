@@ -66,11 +66,9 @@ var MONGRES = (function(){
     });
   };
 
-  MONGRES.Settings = (function(){
-    var Settings = function(name){
-      this.name = "Settings." + name;
-    };
-    var proto = Settings.prototype;
+  MONGRES.KV = (function(){
+    var KV = function(name){ this.name = "KV." + name; };
+    var proto = KV.prototype;
     proto.clear = function() { localStorage.removeItem(this.name); };
     proto.getAll = function() {
       var data = localStorage.getItem(this.name);
@@ -84,7 +82,7 @@ var MONGRES = (function(){
       data[key] = value;
       this.setAll(data);
     };
-    return Settings;
+    return KV;
   })();
 
   return MONGRES;
