@@ -6,11 +6,12 @@ Fractal("tbody", Fractal.Components.table_part.extend({
     '    {{/values}}' +
     '  </tr>' +
     '  {{/records}}',
-  current: 0,
-  options: {limit: 10},
   init: function(name, $container) {
     var self = this;
     self._super(name, $container);
+    self.fieldByName = {};
+    self.current = 0;
+    self.options = {limit: 10};
     self.subscribe(Fractal.TOPIC.DATA_TABLE.LOAD_MORE, function(topic, data){
       self.load();
     });
@@ -43,20 +44,20 @@ Fractal("tbody", Fractal.Components.table_part.extend({
       var total = data[countQuery].count;
 
       var flattenData = [];
-      var fieldAdded = {}, fieldByName = {};
+      var fieldAdded = {};
       data[dataQuery].forEach(function(v){
         var f = MONGRES.flatten(v);
         for (var i in f) {
-          if (!(i in fieldByName)) {
+          if (!(i in self.fieldByName)) {
             fieldAdded[i] = true;
-            fieldByName[i] = true;
+            self.fieldByName[i] = true;
           }
         }
         flattenData.push(f);
       });
 
       var fields = [];
-      for (var i in fieldByName) fields.push(i);
+      for (var i in self.fieldByName) fields.push(i);
       fields.sort();
 
       self.publish(Fractal.TOPIC.DATA_TABLE.HEAD_UPDATED, fields);
