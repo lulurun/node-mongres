@@ -7,9 +7,11 @@ Fractal("layout_vsp2", Fractal.Component.extend({
     '  overflow: auto;' +
     '}' +
     '.layout-first {' +
+    '  z-index: 999;' +
     '  left: 0;' +
     '}' +
     '.layout-second {' +
+    '  z-index: 998;' +
     '  right: 0;' +
     '}' +
     '.layout-splitter {' +
@@ -66,6 +68,14 @@ Fractal("layout_vsp2", Fractal.Component.extend({
       });
 
       __split($first, $second, $splitter, self.splitterInitPos);
+
+      $first.on("scroll", function(){
+        self.publish("layout_vsp2.first.scroll", $first);
+      });
+      $second.on("scroll", function(){
+        self.publish("layout_vsp2.second.scroll", $second);
+      });
+
       callback();
     }
   })(),

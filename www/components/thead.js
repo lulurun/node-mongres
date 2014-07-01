@@ -41,12 +41,19 @@ Fractal("thead", Fractal.Components.table_part.extend({
   },
   afterRender: function(callback) {
     var self = this;
+    // TODO find a better impl
+    // self.$container.fixedHeader();
     self.$container.find(".btn-remove_col").click(function(){
       var col = $(this).closest("th").data("value");
       self.publish(Fractal.TOPIC.DATA_TABLE.HIDE_COLUMN, col);
       getColumnConfig().set(col, false);
     });
     callback();
-  }
+  },
+  // getData: function(callback) {
+  //   Fractal.require("js/table-fixed-header.js", function(){
+  //     callback();
+  //   });
+  // }
 }));
 
