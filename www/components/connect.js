@@ -1,9 +1,9 @@
-Fractal("connect", Fractal.Component.extend({
+F("connect", F.Component.extend({
   afterRender: function(callback) {
     var self = this;
-    $('#btn-connect').click(function(){
+    self.$('#btn-connect').click(function(){
       var params = {};
-      self.$container.find(".form-connect input").each(function(){
+      self.$(".form-connect input").each(function(){
         var $this = $(this);
         var key = $this.attr("name");
         var val = $this.val();
@@ -15,7 +15,7 @@ Fractal("connect", Fractal.Component.extend({
         } else {
           localStorage.setItem("last_connected", JSON.stringify(params));
           MONGRES.currentDB = result.connected;
-          Fractal.next("viewer", { conn: result.connected });
+          F.navigate("viewer", { conn: result.connected });
         }
       });
     });
@@ -24,14 +24,11 @@ Fractal("connect", Fractal.Component.extend({
   getData: function(callback) {
     var self = this;
     var lastConnected = JSON.parse(localStorage.getItem("last_connected") || "{}");
-    ["host", "port", "user", "password"].forEach(function(v){
-      lastConnected[v] = lastConnected[v] || "";
-    });
     self.data = lastConnected;
-    Fractal.require("conn", function(data){
+    F.require("conn", function(data){
       self.data.conns = data;
+      callback();
     });
-    callback();
   }
 }));
 

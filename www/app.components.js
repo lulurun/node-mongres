@@ -145,7 +145,6 @@ Fractal("objectViewer", Fractal.Component.extend({
     Fractal.require(query, function(data){
       self.data = makeData(data);
       self.data.isObj= false;
-      console.log(self.data);
       self.partials = { objectViewer: self.template };
       callback();
     });

@@ -1,15 +1,12 @@
-Fractal("sidebar", Fractal.Component.extend({
+F("sidebar", F.Component.extend({
   getData: function(callback) {
     var self = this;
-    var connId = Fractal.env.conn || MONGRES.currentConn;
-    if (!connId) {
-      console.error("no connection");
-      return Fractal.next("connect");
-    }
-    Fractal.require("conn/" + Fractal.env.conn + "/db", function(data){
+    F.require("conn/" + F.env.conn + "/db", function(data){
       if (!data || data.err) {
         console.error("can not get db list", data);
-        return Fractal.next("connect");
+        F.navigate("connect");
+        callback();
+        return;
       }
       data.databases.sort(function(a, b){ return a.name < b.name ? -1 : 1; });
       self.data = data;
@@ -18,7 +15,7 @@ Fractal("sidebar", Fractal.Component.extend({
   }
 }));
 
-Fractal("db", Fractal.Component.extend({
+F("db", F.Component.extend({
   init: function(name, $container) {
     var self = this;
     self._super(name, $container);

@@ -1,19 +1,20 @@
-(function(root){
-  var Fractal = function(){
+(function(window){
+  var Fractal = function(arg1, arg2){
     var callback = null;
-    if (typeof arguments[0] === 'function') {
-      callback = arguments[0];
-    } else if (typeof arguments[0] === 'string' && typeof arguments[1] === 'function') {
-      var name = arguments[0], component = arguments[1];
+    if (typeof(arg1) === 'function') { // register a onReady callback
+      callback = arg1
+    } else if (typeof(arg1) === 'string' && typeof(arg2) === 'function') { // add a component
+      var name = arg1, component = arg2;
       callback = function(){ Fractal.Components[name] = component; };
     }
     if (!callback) return;
-    if (Fractal.__ready) callback();
-    else {
-      if (!Fractal.__startup) Fractal.__startup = [];
-      Fractal.__startup.push(callback);
-    }
+    if (Fractal.__ready) return callback();
+    if (!Fractal.__startup) Fractal.__startup = [];
+    Fractal.__startup.push(callback);
   };
+  window.Fractal = Fractal;
+  window.F = Fractal; // alias
+
   Fractal.ready =  function(){
     Fractal.ready = null;
     Fractal.__ready = true;
@@ -23,14 +24,14 @@
     }
   };
   // Settings
-  Fractal.API_ROOT = window.location.pathname;
+  Fractal.API_ROOT = window.location.pathname.split("/").slice(0, -1).join("/") + "/";
   Fractal.SOURCE_ROOT = Fractal.API_ROOT;
-  Fractal.DOM_PARSER = "//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js";
-  Fractal.TEMPLATE_ENGINE = "//cdnjs.cloudflare.com/ajax/libs/hogan.js/3.0.0/hogan.js";
+  var protocol = window.location.protocol == "file:" ? "http:" : window.location.protocol;
+  Fractal.DOM_PARSER = protocol + "//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js";
+  Fractal.TEMPLATE_ENGINE = protocol + "//cdnjs.cloudflare.com/ajax/libs/hogan.js/3.0.0/hogan.js";
   Fractal.TOPIC = {
     COMPONENT_LOADED_MYSELF: "Fractal.component.loaded.myself",
     COMPONENT_LOADED_CHILDREN: "Fractal.component.loaded.children",
-    DATA_UPDATED: "Fractal.data.updated"
   };
   Fractal.PREFIX = {}; // component, template
   Fractal.Compile = function(templateText) { return Hogan.compile(templateText); };
@@ -55,19 +56,17 @@
         console.error("Timeout: adding " + element.src);
         callback(true, false); // err, result
       }, 10000);
+      var done = false;
+      element.onload = element.onreadystatechange = function(){
+        if ( !done && (!this.readyState ||
+                       this.readyState == "loaded" || this.readyState == "complete") ) {
+          done = true;
+          clearTimeout(__myTimer);
+          callback(false, true); // err, result
+          element.onload = element.onreadystatechange = null;
+        }
+      };
       var container = document.getElementsByTagName("head")[0];
-      {
-        var done = false;
-        element.onload = element.onreadystatechange = function(){
-          if ( !done && (!this.readyState ||
-                         this.readyState == "loaded" || this.readyState == "complete") ) {
-            done = true;
-            clearTimeout(__myTimer);
-            callback(false, true); // err, result
-            element.onload = element.onreadystatechange = null;
-          }
-        };
-      }
       container.appendChild(element);
     };
     var byAjax = function(url, options, callback){
@@ -95,83 +94,101 @@
       var ExtType = { "js": "script", "css": "css", "tmpl": "template" };
       return function(resourceId) {
         var ext = resourceId.split('.').pop();
-        return ExtType[ext] || "json";
+        return ExtType[ext] || "ajax";
       };
     })();
     var getUrl = function(type, name) {
       if (name.indexOf("http") === 0 || name.indexOf("//") === 0) return name;
       if (name.indexOf(".") === 0) return window.location.pathname + name;
-      var base = (type === "json") ? Fractal.API_ROOT : Fractal.SOURCE_ROOT;
+      var base = (type === "ajax") ? Fractal.API_ROOT : Fractal.SOURCE_ROOT;
       if (name.indexOf("/") === 0) return base + name.slice(1);
       return base + (Fractal.PREFIX[type] || "") + name;
     };
     var Type2Getter = {
-      "script": function(url, callback) {
-        var el = document.createElement("script");
-        el.src = url;
-        byAddingElement(el, callback);
-      },
-      "css": function(url, callback) {
-        var el = document.createElement("link");
-        el.rel="stylesheet";
-        el.href = url;
-        byAddingElement(el, callback);
-      },
-      "template": byAjax,
-      "json": function(url, callback){
-        byAjax(url, {contentType: "application/json"}, function(err, responseText){
-          if (err) callback(err, responseText);
-          else {
+      "script": (function(){
+        var cache = {};
+        return function(url, callback) {
+          if (url in cache) return callback(false, true);
+          cache[url] = true;
+          var el = document.createElement("script");
+          el.src = url;
+          byAddingElement(el, callback);
+        };
+      })(),
+      "css": (function(){
+        var cache = {};
+        return function(url, callback) {
+          if (url in cache) return callback(false, true);
+          cache[url] = true;
+          var el = document.createElement("link");
+          el.rel="stylesheet";
+          el.href = url;
+          // NOTE not using byAddingElement,
+          //      some broswers dont fire onreadystatechange event for css ...
+          var container = document.getElementsByTagName("head")[0];
+          container.appendChild(el);
+          callback(false, true);
+        };
+      })(),
+      "template": (function(){
+        var cache = {};
+        return function(url, options, callback) {
+          if (url in cache) return callback(false, cache[url]);
+          byAjax(url, options, function(err, result){
+            if (!err) cache[url] = result;
+            callback(err, result);
+          });
+        };
+      })(),
+      "ajax": (function(){
+        var cache = {};
+        return function(url, callback, options){
+          options = options || {};
+          var forced = !!options.forced;
+          if (!forced && url in cache && cache[url].seq >= Seq.get()) {
+            console.debug("require from cache", url);
+            return callback(false, cache[url].data);
+          }
+          var contentType = options.contentType || "application/json";
+          console.debug("require new", url, forced, cache[url] ? cache[url].seq : "-1", Seq.get());
+          byAjax(url, {contentType: contentType}, function(err, responseText){
+            if (err) return callback(err, responseText);
             var data = null;
-            try {
-              data = JSON.parse(responseText);
-            } catch (e) {
-              console.error("failed to parse responseText, url: " + url + ", res: " + responseText);
-              callback(true, false);
+            if (contentType === "application/json") {
+              try {
+                data = JSON.parse(responseText);
+              } catch (e) {
+                console.error("failed to parse responseText, url: " + url + ", res: " + responseText);
+                callback(true, false);
+              }
+            } else {
+              data = responseText;
             }
+            cache[url] = { seq: Seq.get(), data: data };
             callback(false, data);
-          }
-        });
-      },
+          });
+        };
+      })(),
     };
-    var getResource = function(resourceId, callback) {
-      var type = getType(resourceId);
-      var url = getUrl(type, resourceId);
-      Type2Getter[type](url, callback);
-    };
-
     var requireDefault = (function(){
-      var dataCache = {};
       var listeners = {};
-
-      var __require = function(resource, callback){
-        dataCache[resource] = null;
-        getResource(resource, function(err, data){
-          if (!err) dataCache[resource] = {seq: Seq.get(), data: data};
-          if (resource in listeners) {
-            listeners[resource].forEach(function(v){ v(data); });
-            delete listeners[resource];
-          }
-          callback(data);
-        });
-      };
-
-      return function(resource, callback) {
-        if (resource in dataCache) {
-          if (dataCache[resource]) {
-            if (dataCache[resource].seq >= Seq.get()) callback(dataCache[resource].data, true);
-            else __require(resource, callback);
-          } else {
-            if (!(resource in listeners)) listeners[resource] = [];
-            listeners[resource].push(callback);
-          }
-        } else {
-          __require(resource, callback);
+      return function(resource, options, callback) {
+        if (resource in listeners) {
+          listeners[resource].push(callback);
+          return;
         }
+        listeners[resource] = [callback];
+        var type = (options && options.contentType) ? "ajax" : getType(resource);
+        var url = getUrl(type, resource);
+        Type2Getter[type](url, function(err, data) {
+          var callbackList = listeners[resource].map(function(v){return v;});
+          delete listeners[resource];
+          callbackList.forEach(function(v){v(data);});
+        }, options);
       };
     })();
 
-    return function(resourceList, callback) {
+    return function(resourceList, options, callback) {
       var wantarray = true;
       if (typeof(resourceList) === "string") {
         wantarray = false;
@@ -182,20 +199,18 @@
           return;
         }
       }
+      if (typeof(options) === "function") {
+        callback = options;
+        options = null;
+      }
       var total = resourceList.length;
       var complete = 0;
       var retData = {};
-      var updated = {};
       resourceList.forEach(function(v){
-        requireDefault(v, function(data, cached){
-          if (!cached) updated[v] = true;
+        requireDefault(v, options, function(data){
           retData[v] = data;
-          if ((++complete) === total) {
-            if (callback) callback(wantarray ? retData : retData[resourceList[0]]);
-            for(var i in updated) { // if (updated is not empty)
-              Fractal.Pubsub.publish(Fractal.TOPIC.DATA_UPDATED, updated);
-              break;
-            }
+          if (callback && (++complete) === total) {
+            callback(wantarray ? retData : retData[resourceList[0]]);
           }
         });
       });
@@ -275,30 +290,35 @@
     var ComponentFilter = '[data-role=component]';
     var getComponentJS = function(name) { return Fractal.PREFIX.component + name + ".js"; };
 
-    var setLoad = function(self, func) {
-      if (func && typeof(func) === "function") {
-        var temp = self.__load;
-        self.__load = function(callback) {
-          temp.bind(self)(func.bind(self, callback));
-        };
+    var setLoad = function(self, next) {
+      if (!next) return;
+      if (!self.__load){
+        self.__load = next;
+        return;
       }
-    };
-    var setUnload = function(self, func) {
-      if (func && typeof(func) === "function") {
-        self.$container.on("destroyed", func.bind(self));
-      }
+      var temp = self.__load;
+      self.__load = function(callback, param) {
+        temp.bind(self)(function(){
+          next.bind(self)(callback, param);
+        }, param);
+      };
     };
 
     var Component = {};
     Component.init = function(name, $container){
       this.name = name;
       this.$container = $container;
+      this.$ = this.$container.find.bind(this.$container);
       var resetDisplay = this.$container.data("display");
       if (resetDisplay) this.$container.css("display", resetDisplay);
       this.loadOnce = this.loadOnce || (!!this.$container.attr("load-once"));
+      if (!this.loadOnce) {
+        this.$container.on("destroyed", this.unload.bind(this));
+      }
 
       this.rendered = false;
       this.subscribeList = {};
+      this.earlyRecieved = [];
       // // TODO implement if needed
       // self.children = [];
       // self.parent = null;
@@ -310,23 +330,21 @@
       setLoad(this, this.render);
       setLoad(this, this.afterRender);
       setLoad(this, this.onMyselfLoaded);
-      setLoad(this, this.loadChildren);
+      if (!this.loadMyselfOnly)
+        setLoad(this, this.loadChildren);
       setLoad(this, this.onAllLoaded);
-
-      setUnload(this, this.unload);
     };
     Component.setTemplate = function(name) {
       this.templateName = name;
       this.template = null;
     };
-    Component.__load = function(callback) {
-      this.$contents = null;
-      callback();
-    };
-    Component.load = function(callback) {
+    Component.load = function(param, callback){
       Seq.increment();
-      this.__load(callback);
+      this.__load(function(){
+        if (callback) callback();
+      }, param);
     };
+    Component.__load = null;
     Component.getData = null;
     Component.getTemplate = function(callback) {
       var self = this;
@@ -350,12 +368,33 @@
     Component.afterRender = null;
     Component.onMyselfLoaded = function(callback){
       this.rendered = true;
+      while (this.earlyRecieved.length > 0) {
+        var v = this.earlyRecieved.pop();
+        v.callback(v.topic, v.data);
+      }
       if (this.loadOnce) this.load = null;
       Fractal.Pubsub.publish(Fractal.TOPIC.COMPONENT_LOADED_MYSELF, {name: this.name});
       callback();
     };
-    Component.loadChildren = function(callback){
+    Component.loadChildren = function(callback, param){
       var self = this;
+
+      var __initComponent = function(name, $container, callback) {
+        if (name in Fractal.Components) {
+          var component = new Fractal.Components[name](name, $container);
+          component.__load(function(){callback(false, name);}, param);
+        } else {
+          var js = getComponentJS(name);
+          Fractal.require(js, function(){ // create <script> and wait util ready
+            if (name in Fractal.Components) {
+              __initComponent(name, $container, callback);
+            } else {
+              callback("object not found in: " + js, name); // TODO mark this as a failed load
+            }
+          });
+        }
+      }
+
       if (!self.$contents) self.$contents = self.$container.contents();
       $subComponents = self.$contents.find(ComponentFilter).andSelf().filter(ComponentFilter);
       var len = $subComponents.length;
@@ -366,46 +405,28 @@
       }
       // start to load children
       var finished = 0;
-      var __onChildLoaded = function(err){
-        if (err) console.error("Failed to load component: " + err);
-        if (++finished == len) {
-          Fractal.Pubsub.publish(Fractal.TOPIC.COMPONENT_LOADED_CHILDREN, {name: self.name});
-          if (callback) callback();
-        }
-      };
-
-      var __initComponent = function(name, $container) {
-        var component = new Fractal.Components[name](name, $container);
-        component.__load(function(name){
-          return __onChildLoaded();
-        });
-      };
-
       $subComponents.each(function(){
         var $subContainer = $(this);
         var name = $subContainer.data("name");
-        if (name in Fractal.Components) { // load instantly if $component.js is already included
-          __initComponent(name, $subContainer);
-        } else {
-          var js = getComponentJS(name);
-          Fractal.require(js, function(){ // create <script> and wait util ready
-            if (name in Fractal.Components) {
-              __initComponent(name, $subContainer);
-            } else {
-              console.error("Component object not found in " + js);
-              __onChildLoaded(name); // TODO mark this as a failed load
-            }
-          });
-        }
-
+        __initComponent(name, $subContainer, function(err, name) {
+          if (err) console.error("Failed to load component: " + name + " reason: " + err);
+          if (++finished === len) {
+            Fractal.Pubsub.publish(Fractal.TOPIC.COMPONENT_LOADED_CHILDREN, {name: self.name});
+            if (callback) callback();
+          }
+        });
       });
-    };
+    },
     Component.onAllLoaded = null;
     Component.unload = function(){ this.unsubscribe(); };
 
     Component.publish = function(topic, data) { Fractal.Pubsub.publish(topic, data); };
     Component.subscribe = function(topic, callback){
-      this.subscribeList[topic] = Fractal.Pubsub.subscribe(topic, callback);;
+      var self = this;
+      self.subscribeList[topic] = Fractal.Pubsub.subscribe(topic, function(topic, data){
+        if (self.rendered) callback(topic, data);
+        else self.earlyRecieved.push({topic: topic, data: data, callback: callback});
+      });
     };
     Component.unsubscribe = function(topic) {
       if (!topic) {
@@ -418,7 +439,6 @@
     return Fractal.Class.extend(Component);
   })();
   Fractal.construct = function(callback){
-    Fractal.construct = null;
     Fractal.require([Fractal.DOM_PARSER, Fractal.TEMPLATE_ENGINE], function(){
       $.event.special.destroyed = {
         remove: function(o) {
@@ -503,15 +523,5 @@
     };
   }());
 
-  if (typeof define === 'function' && define.amd) {
-    define(function () {
-      return Fractal;
-    });
-  } else if (typeof module === 'object' && module.exports){
-    module.exports = Fractal;
-  } else {
-    root.Fractal = Fractal;
-  }
-
   Fractal.ready();
-}(( typeof window === 'object' && window ) || this));
+})(window);
