@@ -37,9 +37,8 @@ Fractal("tbody", Fractal.Components.table_part.extend({
       return callback();
     }
     self.options.skip = self.current;
-    var query = "conn/" + Fractal.env.conn + "/db/" + Fractal.env.db + "/col/" + Fractal.env.col;
-    var countQuery = query + "/stats";
-    var dataQuery = query + "?options=" + encodeURIComponent(JSON.stringify(self.options));
+    var countQuery = "connections/" + Fractal.env.conn + "/databases/" + Fractal.env.db + "/collections/" + Fractal.env.col;
+    var dataQuery = countQuery + "/documents?options=" + encodeURIComponent(JSON.stringify(self.options));
     Fractal.require([countQuery, dataQuery], function(data){
       var total = data[countQuery].count;
 

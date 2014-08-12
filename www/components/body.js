@@ -1,4 +1,30 @@
-Fractal("body", Fractal.Component.extend({}));
+F("body", F.Components.layout_vsp2.extend({
+  init: function(name, $container) {
+    var self = this;
+    self._super(name, $container);
+    self.splitterInitPos = 300;
+    self.first = { name: "sidebar" };
+    self.second = { name: "viewer_body"};
+    self.subscribe("toggle.sidebar", function(topic, data){
+      if (self.pos) {
+        self.lastPos = self.pos;
+        self.split(0);
+      } else self.split(self.lastPos);
+    });
+    self.subscribe("open.sidebar", function(topic, data){
+      self.__split(self.lastPos);
+    });
+  },
+  getData: function(cb){
+    if (!F.env.conn) {
+      console.error("no connection");
+      F.navigate("connect");
+    }
+    this._super(cb);
+  }
+}));
+
+F("viewer_body", F.Component.extend({}));
 
 Fractal("navi", Fractal.Component.extend({
   init: function(name, $container) {
@@ -68,13 +94,13 @@ Fractal("contents", Fractal.Components.Router.extend({
 
 Fractal("dbStats", Fractal.Components.basicInfo.extend({
   title: "DB Stats",
-  getQuery: function(){ return "conn/" + Fractal.env.conn + "/db/" + Fractal.env.db + "/stats"; }
+  getQuery: function(){ return "connections/" + Fractal.env.conn + "/databases/" + Fractal.env.db; }
 }));
 
 Fractal("colStats", Fractal.Components.basicInfo.extend({
   title: "Collection Stats",
   getQuery: function(){
-    return "conn/" + Fractal.env.conn + "/db/" + Fractal.env.db + "/col/" + Fractal.env.col + "/stats";
+    return "connections/" + Fractal.env.conn + "/databases/" + Fractal.env.db + "/collections/" + Fractal.env.col;
   }
 }));
 

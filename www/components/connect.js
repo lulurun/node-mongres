@@ -1,4 +1,8 @@
 F("connect", F.Component.extend({
+  init: function(name, $container) {
+    this._super(name, $container);
+    this.lastConnected = new MONGRES.kv("lastConnected");
+  },
   afterRender: function(callback) {
     var self = this;
     self.$('#btn-connect').click(function(){
@@ -9,12 +13,12 @@ F("connect", F.Component.extend({
         var val = $this.val();
         if (val) params[key] = val;
       });
-      MONGRES.connect(params, function(result){
+      MONGRES.client.connect(params, function(result){
+        console.log("connect result", result);
         if (result.err) {
           console.error("failed to connect", params, result);
         } else {
-          localStorage.setItem("last_connected", JSON.stringify(params));
-          MONGRES.currentDB = result.connected;
+          self.lastConnected.setAll(params);
           F.navigate("viewer", { conn: result.connected });
         }
       });
@@ -23,9 +27,9 @@ F("connect", F.Component.extend({
   },
   getData: function(callback) {
     var self = this;
-    var lastConnected = JSON.parse(localStorage.getItem("last_connected") || "{}");
-    self.data = lastConnected;
-    F.require("conn", function(data){
+    self.data = self.lastConnected.getAll();
+    F.require("connections", function(data){
+      console.log("connections", data);
       self.data.conns = data;
       callback();
     });

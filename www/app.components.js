@@ -30,55 +30,46 @@ Fractal("layout_vsp2", Fractal.Component.extend({
     '{{#second}}' +
     '<div class="layout layout-second" data-role="component" data-name="{{name}}" />' +
     '{{/second}}',
-  afterRender: (function(){
-    var __split = function($first, $second, $splitter, pos){
-      $first.css("width", pos);
-      $splitter.css("left", pos);
-      $second.css("left", pos + $splitter.width());
-      // $second.css("width", $(window).width() - pos - $splitter.width());
-      $first.trigger("resize");
-      $second.trigger("resize");
-    };
+  split: function(pos){
+    this.$first.css("width", pos);
+    this.$splitter.css("left", pos);
+    this.$second.css("left", pos + this.$splitter.width());
+    // this.$second.css("width", $(window).width() - pos - this.$splitter.width());
+    this.$first.trigger("resize");
+    this.$second.trigger("resize");
+    this.pos = pos;
+  },
+  afterRender: function(callback) {
+    var self = this;
+    self.$first = $(".layout-first");
+    self.$second = $(".layout-second");
+    self.$splitter = $(".layout-splitter");
 
-    return function(callback) {
-      var self = this;
-      var $first = $(".layout-first");
-      var $second = $(".layout-second");
-      var $splitter = $(".layout-splitter");
-
-      $splitter.bind("mousedown", function(ev){
+    self.$splitter.bind("mousedown", function(ev){
+      ev.preventDefault();
+      ev.stopPropagation();
+      var mouseDown = ev.pageX;
+      var startPos = self.$splitter.offset().left;
+      $(document).bind("mousemove", function(ev){
         ev.preventDefault();
         ev.stopPropagation();
-        var mouseDown = ev.pageX;
-        var startPos = $splitter.offset().left;
-        $(document).bind("mousemove", function(ev){
-          ev.preventDefault();
-          ev.stopPropagation();
-          var pos = startPos + (ev.pageX - mouseDown);
-          __split($first, $second, $splitter, pos);
-        });
-        $(document).bind("mouseup", function(ev){
-          ev.preventDefault();
-          ev.stopPropagation();
-          var pos = startPos + (ev.pageX - mouseDown);
-          __split($first, $second, $splitter, pos);
-          $(document).unbind("mousemove");
-          $(document).unbind("mouseup");
-        })
+        var pos = startPos + (ev.pageX - mouseDown);
+        self.split(pos);
       });
+      $(document).bind("mouseup", function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        var pos = startPos + (ev.pageX - mouseDown);
+        self.split(pos);
+        $(document).unbind("mousemove");
+        $(document).unbind("mouseup");
+      })
+    });
 
-      __split($first, $second, $splitter, self.splitterInitPos);
+    self.split(self.splitterInitPos);
 
-      $first.on("scroll", function(){
-        self.publish("layout_vsp2.first.scroll", $first);
-      });
-      $second.on("scroll", function(){
-        self.publish("layout_vsp2.second.scroll", $second);
-      });
-
-      callback();
-    }
-  })(),
+    callback();
+  },
   getData: function(callback) {
     var self = this;
     self.data = {

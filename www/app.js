@@ -1,24 +1,31 @@
 (function(window){
+  'use strict';
+
   window.MONGRES = (function(){
-    function post(path, object, callback) {
-      var xhr = new XMLHttpRequest();
-      xhr.open("POST", path, true);
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4) {
-          var data = JSON.parse(xhr.responseText);
-          callback(data);
+    var client = (function(){
+      function post(path, object, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", path, true);
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == 4) {
+            var data = JSON.parse(xhr.responseText);
+            callback(data);
+          }
         }
-      }
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      console.log("post", object);
-      xhr.send(JSON.stringify(object));
-    };
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify(object));
+      };
 
+      var client = {};
 
-    var MONGRES = {};
-    MONGRES.currentConn = "";
+      client.connect = function(params, callback){
+        post("/api/connections", params, callback);
+      };
 
-    MONGRES.flatten = function(data) {
+      return client;
+    })();
+
+    var flatten = function(data) {
       var result = {};
       function recurse (cur, prop) {
         if (Object(cur) !== cur) {
@@ -43,20 +50,14 @@
       return result;
     };
 
-    MONGRES.connect = function(params, callback){
-      post("/api/conn", params, function(data){
-        callback(data);
-      });
-    };
-
-    MONGRES.KV = (function(){
+    var kv = (function(){
       var KV = function(name){ this.name = "KV." + name; };
       var proto = KV.prototype;
       proto.clear = function() { localStorage.removeItem(this.name); };
       proto.getAll = function() {
         var data = localStorage.getItem(this.name);
         if (data) return JSON.parse(data);
-        return null;
+        return {};
       };
       proto.setAll = function(data) { localStorage.setItem(this.name, JSON.stringify(data)); };
       proto.get = function(key) { return this.getAll()[key]; };
@@ -68,7 +69,11 @@
       return KV;
     })();
 
-    return MONGRES;
+    return {
+      client: client,
+      flatten: flatten,
+      kv: kv
+    };
   })();
 
   var App = Fractal.App.extend({

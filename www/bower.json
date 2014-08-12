@@ -12,6 +12,7 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap-multiselect": "~0.9.4"
+    "bootstrap-multiselect": "~0.9.4",
+    "fractaljs": "~1.0.1"
   }
 }

@@ -1,17 +1,21 @@
-<p>
-<div class="btn-group">
-<button class="btn btn-default">
-  <span class="glyphicon glyphicon-refresh"></span>
-</button>
+<div style="padding-top: 60px;">
+  <div class="btn-group" style="padding-left: 10px;">
+    <button class="btn btn-default">
+      <span class="glyphicon glyphicon-refresh"></span>
+    </button>
 
-<a class="btn btn-default" href="#connect">
-  <span class="glyphicon glyphicon-flash"></span>
-  Connect
-</a>
+    <a class="btn btn-default" href="#connect">
+      <span class="glyphicon glyphicon-flash"></span>
+      Connect
+    </a>
+  </div>
+
+  <hr/>
+
+  {{#databases}}
+  <div class="list-group">
+    <a/>
+    <div data-role="component" data-name="db" data-dbname="{{name}}" load-once="true"></div>
+    <a/>
+  {{/databases}}
 </div>
-</p>
-
-{{#databases}}
-<div data-role="component" data-name="db" data-dbname="{{name}}" data-resetdisplay="false"></div>
-{{/databases}}
-

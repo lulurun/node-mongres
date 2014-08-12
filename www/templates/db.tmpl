@@ -1,28 +1,7 @@
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <div class="btn-group">
-      <button type="button" class="btn btn-default btn-link dropdown-toggle" data-toggle="dropdown">
-        {{db}}
-        <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
-        <li><a href="#viewer&conn={{conn}}&db={{db}}">
-            <span class="glyphicon glyphicon-refresh"></span>
-            Refresh
-        </a></li>
-        {{#userdb}}
-        <li><a href="#">
-            <span class="glyphicon glyphicon-remove"></span>
-            Drop
-        </a></li>
-        {{/userdb}}
-      </ul>
-    </div>
-  </div>
+<a class="list-group-item list-group-item-info"><strong>{{db}}</strong></a>
+{{#collections}}
+<a class="list-group-item"
+   href="#viewer&conn={{conn}}&db={{db}}&col={{colname}}">{{colname}}</a>
+{{/collections}}
 
-  <div class="list-group">
-    {{#collections}}
-    <a class="list-group-item" href="#viewer&conn={{conn}}&db={{db}}&col={{colname}}">{{colname}}</a>
-    {{/collections}}
-  </div>
-</div>
+

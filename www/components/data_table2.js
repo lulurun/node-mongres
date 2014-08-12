@@ -9,7 +9,7 @@ Fractal(function(){
 
 var col2Class = function(colName) { return "col-" + colName.replace(/\./g, "_"); };
 var getColumnConfig = function() {
-  return new MONGRES.KV("Fields." + Fractal.env.col);
+  return new MONGRES.kv("Fields." + Fractal.env.col);
 };
 
 Fractal("data_table2", Fractal.Component.extend({
