@@ -1,5 +1,6 @@
-Fractal("main", Fractal.Components.Router.extend({
-  getComponentName: function(data, callback){
-    callback(Fractal.env.page || "connect");
+F("main", F.Components.Router.extend({
+  getComponentName: function(data, cb){
+    var name = F.env.conn ? "viewer" : "connect";
+    cb(name);
   }
 }));

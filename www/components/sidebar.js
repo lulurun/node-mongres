@@ -1,4 +1,12 @@
 F("sidebar", F.Component.extend({
+  onAllLoaded: function(cb){
+    var self = this;
+    self.$('.list-group-item').click(function(){
+      self.$('.list-group-item').removeClass("active");
+      $(this).addClass("active");
+    });
+    cb();
+  },
   getData: function(callback) {
     var self = this;
     F.require("connections/" + F.env.conn + "/databases", function(data){
@@ -9,6 +17,7 @@ F("sidebar", F.Component.extend({
         return;
       }
       data.databases.sort(function(a, b){ return a.name < b.name ? -1 : 1; });
+      data.connId = F.env.conn;
       self.data = data;
       callback();
     });

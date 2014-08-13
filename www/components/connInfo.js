@@ -1,21 +1,21 @@
-Fractal("conn_info", Fractal.Component.extend({loadOnce: true}));
+F("connInfo", F.Component.extend({loadOnce: true}));
 
-Fractal("buildInfo", Fractal.Components.basicInfo.extend({
+F("buildInfo", F.Components.basicInfo.extend({
   title: "Build Info",
-  getQuery: function(){ return "connections/" + Fractal.env.conn + "/buildInfo"; }
+  getQuery: function(){ return "connections/" + F.env.conn + "/buildInfo"; }
 }));
 
-Fractal("serverStatus", Fractal.Components.basicInfo.extend({
+F("serverStatus", F.Components.basicInfo.extend({
   title: "Server Status",
-  getQuery: function(){ return "connections/" + Fractal.env.conn + "/serverStatus"; }
+  getQuery: function(){ return "connections/" + F.env.conn + "/serverStatus"; }
 }));
 
-Fractal("replSetStatus", Fractal.Components.basicInfo.extend({
+F("replSetStatus", F.Components.basicInfo.extend({
   title: "ReplSet Status",
-  getQuery: function(){ return "connections/" + Fractal.env.conn + "/replSetGetstatus"; }
+  getQuery: function(){ return "connections/" + F.env.conn + "/replSetGetstatus"; }
 }));
 
-Fractal("db_list", Fractal.Component.extend({
+F("dbList", F.Component.extend({
   getData: function(callback) {
     var self = this;
     var connId = Fractal.env.conn || MONGRES.currentConn;

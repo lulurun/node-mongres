@@ -81,7 +81,7 @@ Fractal("layout_vsp2", Fractal.Component.extend({
 }));
 
 Fractal("basicInfo", Fractal.Component.extend({
-  loadOnce: true,
+  //loadOnce: true,
   template: '{{#title}}<div class="panel panel-default">' +
     '<div class="panel-heading">{{title}}</div>' +
     '  <div class="panel-body">' +

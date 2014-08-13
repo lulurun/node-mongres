@@ -1,21 +1,11 @@
-<div style="padding-top: 60px;">
-  <div class="btn-group" style="padding-left: 10px;">
-    <button class="btn btn-default">
-      <span class="glyphicon glyphicon-refresh"></span>
-    </button>
-
-    <a class="btn btn-default" href="#connect">
-      <span class="glyphicon glyphicon-flash"></span>
-      Connect
-    </a>
-  </div>
-
-  <hr/>
-
-  {{#databases}}
+<div style="padding-top: 50px;">
   <div class="list-group">
     <a/>
-    <div data-role="component" data-name="db" data-dbname="{{name}}" load-once="true"></div>
+    <a class="list-group-item list-group-item-danger"
+       href="#connInfo&conn={{connId}}">{{connId}}</a>
+  {{#databases}}
+    <div data-role="component" data-name="db" data-dbname="{{name}}"
+         load-once="true"></div>
     <a/>
   {{/databases}}
-</div>
+  </div>

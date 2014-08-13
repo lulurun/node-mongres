@@ -1,7 +1,12 @@
-<a class="list-group-item list-group-item-info"><strong>{{db}}</strong></a>
+<a class="list-group-item list-group-item-info"
+   href="#dbStats&conn={{conn}}&db={{db}}">
+  <strong>{{db}}</strong>
+</a>
 {{#collections}}
 <a class="list-group-item"
-   href="#viewer&conn={{conn}}&db={{db}}&col={{colname}}">{{colname}}</a>
+   href="#data_table2&conn={{conn}}&db={{db}}&col={{colname}}">
+  {{colname}}
+</a>
 {{/collections}}
 
 
