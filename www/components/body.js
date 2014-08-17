@@ -34,9 +34,24 @@ F("contents", F.Components.Router.extend({
       cb(F.env.page);
     } else {
       if (this.data && this.data.componentName) cb();
-      else cb(F.env.page || "connInfo");
+      else cb(F.env.page || "databases");
     }
   }
+}));
+
+F("buildInfo", F.Components.basicInfo.extend({
+  title: "Build Info",
+  getQuery: function(){ return "connections/" + F.env.conn + "/buildInfo"; }
+}));
+
+F("serverStatus", F.Components.basicInfo.extend({
+  title: "Server Status",
+  getQuery: function(){ return "connections/" + F.env.conn + "/serverStatus"; }
+}));
+
+F("replSetStatus", F.Components.basicInfo.extend({
+  title: "ReplSet Status",
+  getQuery: function(){ return "connections/" + F.env.conn + "/replSetGetstatus"; }
 }));
 
 F("dbStats", F.Components.basicInfo.extend({

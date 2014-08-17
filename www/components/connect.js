@@ -19,7 +19,7 @@ F("connect", F.Component.extend({
           console.error("failed to connect", params, result);
         } else {
           self.lastConnected.setAll(params);
-          F.navigate("connInfo", { conn: result.connected });
+          F.navigate("", { conn: result.connected });
         }
       });
     });

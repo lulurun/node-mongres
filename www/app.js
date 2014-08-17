@@ -78,14 +78,16 @@
 
   var App = Fractal.App.extend({
     init: function(){
+      this.DOM_PARSER = "bower_components/jquery/dist/jquery.min.js";
+      this.TEMPLATE_ENGINE = "bower_components/hogan/web/builds/2.0.0/hogan-2.0.0.js";
       this.PREFIX = {
         component: "components/",
         template: "templates/",
         ajax: "api/",
       };
       this.REQUIRE_LIST = [
-        "//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css",
-        "//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js",
+        "bower_components/bootstrap/dist/js/bootstrap.min.js",
+        "bower_components/bootstrap/dist/css/bootstrap.min.css",
         "css/app.css",
         "app.components.js",
       ];

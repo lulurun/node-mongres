@@ -1,5 +1,45 @@
-{{#items}}
-<li{{#active}} class="active"{{/active}}><a href="{{link}}">{{name}}</a></li>
-{{/items}}
+{{#conn}}
+<li class="dropdown btn-menu-item">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{conn}}
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li><a href="#databases{{linkQuery}}">Databases</a></li>
+    <li class="divider"></li>
+    <li><a href="#buildInfo{{linkQuery}}">Build Info</a></li>
+    <li><a href="#serverStatus{{linkQuery}}">Server Status</a></li>
+    <li><a href="#replSetStatus{{linkQuery}}">ReplSet Status</a></li>
+    <li class="divider"></li>
+    <li><a href="#connect">Connect</a></li>
+  </ul>
+</li>
+{{/conn}}
 
+{{#db}}
+<li class="dropdown btn-menu-item">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{db}}
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li><a href="#collections{{linkQuery}}&">Collections</a></li>
+    <li class="divider"></li>
+    <li><a href="#dbStats{{linkQuery}}">DB Status</a></li>
+  </ul>
+</li>
+{{/db}}
+
+{{#col}}
+<li class="dropdown btn-menu-item">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{col}}
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li><a href="#data_table2{{linkQuery}}&">Documents</a></li>
+    <li class="divider"></li>
+    <li><a href="#colStats{{linkQuery}}">Collection Status</a></li>
+    <li class="divider"></li>
+    <li><a id="btn-resetColumns">Reset Columns</a></li>
+  </ul>
+</li>
+{{/col}}
 
