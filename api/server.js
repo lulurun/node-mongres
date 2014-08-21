@@ -7,6 +7,7 @@ var logger = log4js.getLogger("route.mongodb");
 
 var app = express();
 app.use(bodyParser.json());
+app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("combined"));
 app.use(express.static(__dirname + "/../www"));

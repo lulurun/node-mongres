@@ -1,6 +1,7 @@
 var store = require(__dirname + "/store.js").store;
 var log4js = require('log4js');
 var logger = log4js.getLogger("route.mongodb");
+var ObjectID = require('mongodb').ObjectID;
 
 var URI_MASTER = {
   X: "/*",
@@ -68,13 +69,12 @@ var setup = function(app, prefix, connect) {
     });
   });
 
-  // create database
-  app.post(URI.DB_LIST, function(req, res, next) {
-    var name = req.body.name;
-    req.mongodb.conn.open(name, function(err, db) {
-      res.json({});
-    });
-  });
+  // // create database
+  // app.post(URI.DB_LIST, function(req, res, next) {
+  //   var name = req.body.name;
+  //   req.mongodb.conn.db(name);
+  //   res.json({});
+  // });
 
   app.all(URI.DB_X, function(req, res, next) {
     var name = req.params.dbid;
@@ -92,7 +92,8 @@ var setup = function(app, prefix, connect) {
 
   // drop database
   app.delete(URI.DB, function(req, res, next) {
-    req.mongodb.db.dropDatabase(function(err, result) {
+    var name = req.params.dbid;
+    req.mongodb.conn.db(name).dropDatabase(function(err, result) {
       res.json(result);
     });
   });
@@ -108,7 +109,11 @@ var setup = function(app, prefix, connect) {
   app.post(URI.COLLECTION_LIST, function(req, res, next) {
     var name = req.body.name;
     req.mongodb.db.collection(name, function(err, col) {
-      res.json({});
+      col.insert({}, function(){
+        col.remove({}, function(){
+          res.json({});
+        });
+      });
     });
   });
 
@@ -132,8 +137,11 @@ var setup = function(app, prefix, connect) {
 
   // drop collection
   app.delete(URI.COLLECTION, function(req, res, next) {
-    req.mongodb.col.drop(function(err, result) {
-      res.json(result);
+    var name = req.params.colid;
+    req.mongodb.db.collection(name, function(err, col) {
+      col.drop(function(err, result) {
+        res.json(result);
+      });
     });
   });
 
@@ -186,8 +194,11 @@ var setup = function(app, prefix, connect) {
   });
 
   // update document
-  app.put(URI.DOC, function(req, res, next) {
+  app.post(URI.DOC, function(req, res, next) {
     var doc = req.body;
+    if (typeof(doc) === "string") {
+      doc = JSON.parse(doc, DocParser);
+    }
     delete doc._id;
     req.mongodb.col.update(
       {_id: new ObjectID(req.params.docid)},
@@ -198,12 +209,28 @@ var setup = function(app, prefix, connect) {
     );
   });
 
+  var DocParser = (function(){
+    var re = /^ObjectID\('([0-9a-f]{24})'\)$/;
+    return function(k, v){
+      if (typeof(v) === "string") {
+        var res = v.match(re);
+        if (res) return new ObjectID(res[1]);
+      }
+      return v;
+    };
+  })();
+
+  ObjectID.prototype.toJSON = function(){
+    return "ObjectID('" + this + "')";
+  };
+
   // get document
   app.get(URI.DOC, function(req, res, next) {
     req.mongodb.col.findOne(
       {_id: new ObjectID(req.params.docid)},
       function(err, doc) {
-        res.json(doc);
+        var json = JSON.stringify(doc);
+        res.send(json);
       }
     );
   });

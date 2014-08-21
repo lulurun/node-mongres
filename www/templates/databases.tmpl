@@ -1,35 +1,24 @@
 <div class="panel panel-default">
   <div class="panel-heading">Databases</div>
   <div class="panel-body">
-    <div class="row">
-      <div class="col-md-4">
-        <div class="input-group">
-        <input type="text" class="form-control"
-               name="dbname" placeholder="db name" />
-        <span class="input-group-btn">
-          <button class="btn btn-default" type="button">
-            <span class="glyphicon glyphicon-plus"></span>
-            New
-          </button>
-        </span>
-      </div>
+    <div class="col-md-6 col-xs-12">
+      <table class="table">
+        <thead>
+          <tr><th>name</th><th></th>
+        </thead>
+        <tbody>
+          {{#databases}}
+          <tr>
+            <td>{{name}}</td>
+            <td>
+              {{#removable}}
+              <span class="glyphicon glyphicon-trash"></span>
+              {{/removable}}
+            </td>
+          </tr>
+          {{/databases}}
+        </tbody>
+      </table>
     </div>
   </div>
-  <table class="table">
-    <thead>
-      <tr><th>name</th><th></th>
-    </thead>
-    <tbody>
-      {{#databases}}
-      <tr>
-        <td>{{name}}</td>
-        <td>
-          {{#removable}}
-          <span class="glyphicon glyphicon-trash"></span>
-          {{/removable}}
-        </td>
-      </tr>
-      {{/databases}}
-    </tbody>
-  </table>
 </div>

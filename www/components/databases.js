@@ -1,5 +1,16 @@
 F("databases", F.Component.extend({
-  getData: function(callback) {
+  afterRender: function(cb) {
+    var self = this;
+    self.$("#btn-createDb").click(function(){
+      var dbName = self.$("#input-dbName").val().trim();
+      if (!dbName) return;
+      MONGRES.client.createDb(F.env.conn, dbName, function(){
+        self.load();
+      });
+    });
+    cb();
+  },
+  getData: function(cb) {
     var self = this;
     F.require("connections/" + F.env.conn + "/databases", function(data){
       if (data && data.err) {
@@ -9,7 +20,7 @@ F("databases", F.Component.extend({
         databases: data.databases,
         removable: function() { return this.name !== "local"; }
       };
-      callback();
+      cb();
     });
   }
 }));

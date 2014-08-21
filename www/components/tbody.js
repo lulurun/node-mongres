@@ -1,6 +1,6 @@
 Fractal("tbody", Fractal.Components.table_part.extend({
   template: '  {{#records}}' +
-    '  <tr data-id="{{_id}}">' +
+    '  <tr data-id="{{idString}}" class="document">' +
     '    {{#values}}' +
     '    <td class="{{classValue}} {{#hide}}hide{{/hide}}">{{value}}</td>' +
     '    {{/values}}' +
@@ -23,6 +23,17 @@ Fractal("tbody", Fractal.Components.table_part.extend({
     });
   },
   afterRender: function(callback){
+    var self = this;
+    self.$('.document').click(function(){
+      var docId = $(this).data("id");
+      var params = {
+        conn: F.env.conn,
+        db: F.env.db,
+        col: F.env.col,
+        doc: docId
+      };
+      F.navigate("document", params);
+    });
     callback();
   },
   render: function(callback) {
@@ -77,7 +88,12 @@ Fractal("tbody", Fractal.Components.table_part.extend({
         });
         records.push(r);
       });
-      self.data = { records: records };
+      self.data = {
+        records: records,
+        idString: function(){
+          return this._id.substr(10, 24);
+        }
+      };
 
       // if (fields.changed) update existing table
       if (self.current > 0) {

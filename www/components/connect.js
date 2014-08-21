@@ -14,7 +14,6 @@ F("connect", F.Component.extend({
         if (val) params[key] = val;
       });
       MONGRES.client.connect(params, function(result){
-        console.log("connect result", result);
         if (result.err) {
           console.error("failed to connect", params, result);
         } else {
@@ -29,7 +28,6 @@ F("connect", F.Component.extend({
     var self = this;
     self.data = self.lastConnected.getAll();
     F.require("connections", function(data){
-      console.log("connections", data);
       self.data.conns = data;
       callback();
     });

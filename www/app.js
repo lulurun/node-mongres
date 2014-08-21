@@ -3,23 +3,72 @@
 
   window.MONGRES = (function(){
     var client = (function(){
-      function post(path, object, callback) {
+      function ajax(options, path, object, cb) {
+        var method = options.method || "POST";
+        var contentType = options.contentType || "application/json";
+
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", path, true);
+        xhr.open(method, path, true);
         xhr.onreadystatechange = function () {
           if (xhr.readyState == 4) {
             var data = JSON.parse(xhr.responseText);
-            callback(data);
+            cb(data);
           }
         }
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send(JSON.stringify(object));
+        xhr.setRequestHeader('Content-Type', contentType);
+        object = object || {};
+        var text = (typeof(object) === "object") ? JSON.stringify(object) : object;
+        xhr.send(text);
+      };
+
+      function _delete(path, object, cb) {
+        if (typeof object === "function") {
+          cb = object;
+          object = null;
+        }
+        ajax({method: "DELETE"}, path, object, cb);
+      };
+
+      function post(path, object, cb) {
+        if (typeof object === "function") {
+          cb = object;
+          object = null;
+        }
+        ajax({}, path, object, cb);
+      };
+
+      function postPlain(path, text, cb) {
+        console.log("post plain", text)
+        ajax({contentType: "text/plain"}, path, text, cb);
       };
 
       var client = {};
 
-      client.connect = function(params, callback){
-        post("/api/connections", params, callback);
+      client.connect = function(params, cb){
+        post("/api/connections", params, cb);
+      };
+
+      client.createCollection = function(connId, dbName, colName, cb){
+        var path = "/api/connections/";
+        path += connId + "/databases/";
+        path += dbName + "/collections";
+        post(path, {name: colName}, cb);
+      };
+
+      client.dropCollection = function(connId, dbName, colName, cb){
+        var path = "/api/connections/" + connId;
+        path += "/databases/" + dbName + "/collections/" + colName;
+        _delete(path, cb);
+      };
+
+      client.saveDoc = function(doc, cb) {
+        var path = "/api/connections/" + F.env.conn;
+        path += "/databases/" + F.env.db;
+        path += "/collections/" + F.env.col;
+        path += "/documents";
+        if (F.env.doc) path += "/" + F.env.doc
+
+        postPlain(path, doc, cb);
       };
 
       return client;

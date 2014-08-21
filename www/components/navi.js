@@ -17,6 +17,7 @@ F("navi", F.Component.extend({
       self.$('.btn-menu-item').removeClass('active');
       $(this).closest('.btn-menu-item').addClass('active');
     });
+    cb();
   },
   getData: function(cb){
     var self = this;
