@@ -1,31 +1,33 @@
-Fractal("tbody", Fractal.Components.table_part.extend({
-  template: '  {{#records}}' +
-    '  <tr data-id="{{idString}}" class="document">' +
-    '    {{#values}}' +
-    '    <td class="{{classValue}} {{#hide}}hide{{/hide}}">{{value}}</td>' +
-    '    {{/values}}' +
-    '  </tr>' +
-    '  {{/records}}',
+F("tbody", F.Components.table_part.extend({
   init: function(name, $container) {
     var self = this;
     self._super(name, $container);
     self.fieldByName = {};
     self.current = 0;
     self.options = {limit: 10};
-    self.subscribe(Fractal.TOPIC.DATA_TABLE.LOAD_MORE, function(topic, data){
+    self.subscribe(F.TOPIC.DATA_TABLE.LOAD_MORE, function(topic, data){
       self.load();
     });
-    self.subscribe(Fractal.TOPIC.DATA_TABLE.SHOW_COLUMN, function(topic, data){
+    self.subscribe(F.TOPIC.DATA_TABLE.SHOW_COLUMN, function(topic, data){
       self.showColumn(data);
     });
-    self.subscribe(Fractal.TOPIC.DATA_TABLE.HIDE_COLUMN, function(topic, data){
+    self.subscribe(F.TOPIC.DATA_TABLE.HIDE_COLUMN, function(topic, data){
       self.hideColumn(data);
     });
   },
-  afterRender: function(callback){
+  afterRender: function(cb){
     var self = this;
-    self.$('.document').click(function(){
-      var docId = $(this).data("id");
+    self.$('.cbx-doc').click(function(ev){
+      var checkedDocs = [];
+      self.$('.cbx-doc').each(function(){
+        if (this.checked) {
+          checkedDocs.push($(this).closest(".doc").data("id"));
+        }
+      });
+      self.publish("doc.checked", checkedDocs);
+    });
+    self.$('.doc-value').click(function(){
+      var docId = $(this).closest(".doc").data("id");
       var params = {
         conn: F.env.conn,
         db: F.env.db,
@@ -34,23 +36,23 @@ Fractal("tbody", Fractal.Components.table_part.extend({
       };
       F.navigate("document", params);
     });
-    callback();
+    cb();
   },
-  render: function(callback) {
-    var contents = Fractal.Render(this.template, this.data);
+  render: function(cb) {
+    var contents = F.Render(this.template, this.data);
     this.$container.append(contents);
-    callback();
+    cb();
   },
-  getData: function(callback) {
+  getData: function(cb) {
     var self = this;
-    if (!Fractal.env.db || !Fractal.env.col) {
+    if (!F.env.db || !F.env.col) {
       self.data = {};
-      return callback();
+      return cb();
     }
     self.options.skip = self.current;
-    var countQuery = "connections/" + Fractal.env.conn + "/databases/" + Fractal.env.db + "/collections/" + Fractal.env.col;
+    var countQuery = "connections/" + F.env.conn + "/databases/" + F.env.db + "/collections/" + F.env.col;
     var dataQuery = countQuery + "/documents?options=" + encodeURIComponent(JSON.stringify(self.options));
-    Fractal.require([countQuery, dataQuery], function(data){
+    F.require([countQuery, dataQuery], function(data){
       var total = data[countQuery].count;
 
       var flattenData = [];
@@ -70,9 +72,9 @@ Fractal("tbody", Fractal.Components.table_part.extend({
       for (var i in self.fieldByName) fields.push(i);
       fields.sort();
 
-      self.publish(Fractal.TOPIC.DATA_TABLE.HEAD_UPDATED, fields);
+      self.publish(F.TOPIC.DATA_TABLE.HEAD_UPDATED, fields);
 
-      var config = getColumnConfig().getAll();
+      var config = MONGRES.getColumnConfig().getAll();
       var hide = config ? function(v){
         return (v in config && !config[v]);
       } : function(){ return false; };
@@ -81,7 +83,7 @@ Fractal("tbody", Fractal.Components.table_part.extend({
         r = {_id: d._id, values: []};
         fields.forEach(function(f){
           r.values.push({
-            classValue: col2Class(f),
+            classValue: MONGRES.col2Class(f),
             value: d[f],
             hide: hide(f),
           });
@@ -104,16 +106,19 @@ Fractal("tbody", Fractal.Components.table_part.extend({
           lastV = v;
         });
         insertCols.forEach(function(v){
-          var $after = self.$container.find("." + col2Class(v.after));
-          var classes = col2Class(v.me) + (hide(v) ? " hide" : "");
+          var $after = self.$("." + MONGRES.col2Class(v.after));
+          var classes = MONGRES.col2Class(v.me) + (hide(v) ? " hide" : "");
           var $me = $('<td class="' + classes + '"></td>');
           $after.after($me);
         });
       }
       self.current += records.length;
-      self.publish(Fractal.TOPIC.DATA_TABLE.BODY_UPDATED, {all_loaded: (self.current >= total)});
+      self.publish(
+        F.TOPIC.DATA_TABLE.BODY_UPDATED,
+        {all_loaded: (self.current >= total)}
+      );
 
-      callback();
+      cb();
     });
   },
 }));

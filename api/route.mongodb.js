@@ -235,7 +235,7 @@ var setup = function(app, prefix, connect) {
     );
   });
 
-  // delete document
+  // delete 1 document
   app.delete(URI.DOC, function(req, res, next) {
     req.mongodb.col.remove(
       {_id: new ObjectID(req.params.docid)},
@@ -243,6 +243,29 @@ var setup = function(app, prefix, connect) {
         res.json({removed: nbRemoved});
       }
     );
+  });
+
+  // delete multiple documents
+  app.delete(URI.DOC_LIST, function(req, res, next) {
+    var docIds = req.body;
+    if (docIds && docIds.length) {
+      var nbRemoved = 0;
+      var total = docIds.length;
+      var complete = 0;
+      docIds.forEach(function(id){
+        req.mongodb.col.remove(
+          {_id: new ObjectID(id)},
+          function(err, nb) {
+            nbRemoved += nb;
+            if (++complete === total) {
+              res.json({removed: nbRemoved});
+            }
+          }
+        );
+      });
+    } else {
+      next();
+    }
   });
 };
 

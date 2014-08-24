@@ -1,0 +1,10 @@
+{{#records}}
+<tr data-id="{{idString}}" class="doc">
+  <td>
+    <input type="checkbox" class="cbx-doc">
+  </td>
+  {{#values}}
+  <td class="doc-value {{classValue}} {{#hide}}hide{{/hide}}">{{value}}</td>
+  {{/values}}
+</tr>
+{{/records}}

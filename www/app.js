@@ -71,6 +71,19 @@
         postPlain(path, doc, cb);
       };
 
+      client.removeDocs = function(docs, cb) {
+        var path = "/api/connections/" + F.env.conn;
+        path += "/databases/" + F.env.db;
+        path += "/collections/" + F.env.col;
+        path += "/documents";
+        if (docs.length === 1) {
+          path += "/" + docs[0];
+          _delete(path, cb);
+        } else {
+          _delete(path, docs, cb);
+        }
+      };
+
       return client;
     })();
 
@@ -102,6 +115,7 @@
     var kv = (function(){
       var KV = function(name){ this.name = "KV." + name; };
       var proto = KV.prototype;
+      proto.exists = function() { return !!localStorage.getItem(this.name); };
       proto.clear = function() { localStorage.removeItem(this.name); };
       proto.getAll = function() {
         var data = localStorage.getItem(this.name);
@@ -121,7 +135,13 @@
     return {
       client: client,
       flatten: flatten,
-      kv: kv
+      kv: kv,
+      getColumnConfig: function() {
+        return new MONGRES.kv("Fields." + F.env.col);
+      },
+      col2Class: function(colName) {
+        return "col-" + colName.replace(/\./g, "_");
+      },
     };
   })();
 

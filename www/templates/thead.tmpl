@@ -1,0 +1,12 @@
+<tr>
+<th>
+  <input type="checkbox" id="cbx-all">
+</th>
+{{#fields}}
+<th class="{{classValue}} {{#hide}}hide{{/hide}}" data-value="{{value}}">
+  <span class="glyphicon glyphicon-remove-circle btn-remove_col" style="opacity:0.3;" />
+  <br>
+  {{#parts}}{{.}}<br>{{/parts}}
+</th>
+{{/fields}}
+</tr>

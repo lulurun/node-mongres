@@ -1,21 +1,13 @@
-Fractal("thead", Fractal.Components.table_part.extend({
-  template: '  <tr>' +
-    '    {{#fields}}' +
-    '    <th class="{{classValue}} {{#hide}}hide{{/hide}}" data-value="{{value}}">' +
-    '      <span class="glyphicon glyphicon-remove-circle btn-remove_col" style="opacity:0.3;" /><br>' +
-    '      {{#parts}}{{.}}<br>{{/parts}}' +
-    '    </th>' +
-    '    {{/fields}}' +
-    '  </tr>',
+F("thead", F.Components.table_part.extend({
   init: function(name, $container) {
     var self = this;
     self._super(name, $container);
     self.fields = [];
-    self.subscribe(Fractal.TOPIC.DATA_TABLE.HEAD_UPDATED, function(topic, data){
+    self.subscribe(F.TOPIC.DATA_TABLE.HEAD_UPDATED, function(topic, data){
       if (data.length !== self.fields.length) {
         self.fields = data;
 
-        var config = getColumnConfig().getAll();
+        var config = MONGRES.getColumnConfig().getAll();
         var hide = config ? function(v){
           return (v in config && !config[v]);
         } : function(){ return false; };
@@ -24,7 +16,7 @@ Fractal("thead", Fractal.Components.table_part.extend({
             return {
               value: v,
               parts: v.split("."),
-              classValue: col2Class(v),
+              classValue: MONGRES.col2Class(v),
               hide: hide(v),
             };
           })
@@ -32,28 +24,21 @@ Fractal("thead", Fractal.Components.table_part.extend({
         self.load();
       }
     });
-    self.subscribe(Fractal.TOPIC.DATA_TABLE.SHOW_COLUMN, function(topic, data){
+    self.subscribe(F.TOPIC.DATA_TABLE.SHOW_COLUMN, function(topic, data){
       self.showColumn(data);
     });
-    self.subscribe(Fractal.TOPIC.DATA_TABLE.HIDE_COLUMN, function(topic, data){
+    self.subscribe(F.TOPIC.DATA_TABLE.HIDE_COLUMN, function(topic, data){
       self.hideColumn(data);
     });
   },
-  afterRender: function(callback) {
+  afterRender: function(cb) {
     var self = this;
-    // TODO find a better impl
-    // self.$container.fixedHeader();
     self.$container.find(".btn-remove_col").click(function(){
       var col = $(this).closest("th").data("value");
-      self.publish(Fractal.TOPIC.DATA_TABLE.HIDE_COLUMN, col);
-      getColumnConfig().set(col, false);
+      MONGRES.getColumnConfig().set(col, false);
+      self.publish(F.TOPIC.DATA_TABLE.HIDE_COLUMN, col);
     });
-    callback();
+    cb();
   },
-  // getData: function(callback) {
-  //   Fractal.require("js/table-fixed-header.js", function(){
-  //     callback();
-  //   });
-  // }
 }));
 
