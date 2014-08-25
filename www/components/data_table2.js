@@ -1,11 +1,4 @@
 F(function(){
-  F.TOPIC.DATA_TABLE = {};
-  F.TOPIC.DATA_TABLE.HEAD_UPDATED = "table.head.updated";
-  F.TOPIC.DATA_TABLE.BODY_UPDATED = "table.body.updated";
-  F.TOPIC.DATA_TABLE.LOAD_MORE = "table.load_more";
-  F.TOPIC.DATA_TABLE.SHOW_COLUMN = "table.show_col";
-  F.TOPIC.DATA_TABLE.HIDE_COLUMN = "table.hide_col";
-
   F("data_table2", F.Component.extend({
     getBtn: function(){ return this.$container.find(".btn-load_more"); },
     init: function(name, $container) {

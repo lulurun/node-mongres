@@ -5,6 +5,9 @@ F("tbody", F.Components.table_part.extend({
     self.fieldByName = {};
     self.current = 0;
     self.options = {limit: 10};
+    self.subscribe(F.TOPIC.DATA_TABLE.RELOAD, function(topic, data){
+      self.load({reset: true});
+    });
     self.subscribe(F.TOPIC.DATA_TABLE.LOAD_MORE, function(topic, data){
       self.load();
     });
@@ -38,17 +41,22 @@ F("tbody", F.Components.table_part.extend({
     });
     cb();
   },
-  render: function(cb) {
-    var contents = F.Render(this.template, this.data);
-    this.$container.append(contents);
-    cb();
+  render: function(cb, param) {
+    if (param && param.reset) {
+      this._super(cb);
+    } else {
+      var contents = F.Render(this.template, this.data);
+      this.$container.append(contents);
+      cb();
+    }
   },
-  getData: function(cb) {
+  getData: function(cb, param) {
     var self = this;
     if (!F.env.db || !F.env.col) {
       self.data = {};
       return cb();
     }
+    if (param && param.reset) self.current = 0;
     self.options.skip = self.current;
     var countQuery = "connections/" + F.env.conn + "/databases/" + F.env.db + "/collections/" + F.env.col;
     var dataQuery = countQuery + "/documents?options=" + encodeURIComponent(JSON.stringify(self.options));

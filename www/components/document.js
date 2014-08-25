@@ -1,5 +1,13 @@
 F(function(){
   F("document", F.Component.extend({
+    init: function(name, $container){
+      var self = this;
+      self._super(name, $container);
+      self.subscribe(F.TOPIC.ENV_CHANGED, function(topic, data){
+        console.log(data);
+        if (data.doc) self.load();
+      });
+    },
     afterRender: function(cb){
       var self = this;
       self.$("#btn-save").click(function(){
@@ -11,13 +19,23 @@ F(function(){
           }
         );
         var doc = JSON.parse(text);
-        MONGRES.client.saveDoc(doc, function(){
-          self.load();
+        MONGRES.client.saveDoc(doc, function(res){
+          if (res.length === 1 && res[0]._id) {
+            F.navigate("document", {
+              conn: F.env.conn,
+              db: F.env.db,
+              col: F.env.col,
+              doc: res[0]._id.substr(10, 24)
+            });
+          } else {
+            self.load();
+          }
         });
       });
       self.$("#btn-reset").click(function(){
         self.$("#input-doc").val(self.data.data);
       });
+      cb();
     },
     getData: function(cb){
       var self = this;
@@ -26,6 +44,7 @@ F(function(){
         path += "/databases/" + F.env.db;
         path += "/collections/" + F.env.col;
         path += "/documents/" + F.env.doc;
+        console.log("AAAAA", path);
         F.require(path, function(data){
           var text = JSON.stringify(data, null, "  ");
           var rows = text.split("\n").length;
@@ -44,6 +63,10 @@ F(function(){
           cb();
         });
       } else {
+          self.data = {
+            data: "{\n\n}",
+            height: $(window).height() - 200
+          };
         cb();
       }
     }

@@ -1,13 +1,27 @@
 {{#enable}}
 <div class="form-group">
   <input type="text" class="form-control" placeholder="Search" id="input-search">
-  <button class="btn btn-default" id="btn-remove-docs" style="display: none;">
-    Remove
-    <span class="badge"></span>
+  <a class="btn btn-default"
+     href="#document&conn={{conn}}&db={{db}}&col={{col}}">+ New</a>
+
+  <button class="btn btn-default" style="display: none;"
+          data-role="component" data-name="colCtrl_removeDoc">
   </button>
-  <button class="btn btn-default" id="btn-reset-col" style="display: none;">
-    Reset Columns
+  <button class="btn btn-default" style="display: none;"
+          data-role="component" data-name="colCtrl_resetColumn">
   </button>
-  <button class="btn btn-default">+ New</button>
 </div>
 {{/enable}}
+
+{{=<% %>=}}
+
+<script type="text/template" id="template-colCtrl_removeDoc">
+  Remove
+  <span class="badge">{{badge}}</span>
+</script>
+
+<script type="text/template" id="template-colCtrl_resetColumn">
+  Reset Columns
+</script>
+
+<%={{ }}=%>

@@ -188,8 +188,11 @@ var setup = function(app, prefix, connect) {
   // create document
   app.post(URI.DOC_LIST, function(req, res, next) {
     var docs = req.body;
-    req.mongodb.col.insert(docs, function(err, docs) {
-      res.json(docs);
+    if (typeof(docs) === "string") {
+      docs = JSON.parse(docs, DocParser);
+    }
+    req.mongodb.col.insert(docs, function(err, inserted) {
+      res.json(inserted);
     });
   });
 

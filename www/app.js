@@ -38,7 +38,6 @@
       };
 
       function postPlain(path, text, cb) {
-        console.log("post plain", text)
         ajax({contentType: "text/plain"}, path, text, cb);
       };
 
@@ -67,7 +66,6 @@
         path += "/collections/" + F.env.col;
         path += "/documents";
         if (F.env.doc) path += "/" + F.env.doc
-
         postPlain(path, doc, cb);
       };
 
@@ -144,6 +142,14 @@
       },
     };
   })();
+
+  F.TOPIC.DATA_TABLE = {};
+  F.TOPIC.DATA_TABLE.HEAD_UPDATED = "table.head.updated";
+  F.TOPIC.DATA_TABLE.BODY_UPDATED = "table.body.updated";
+  F.TOPIC.DATA_TABLE.LOAD_MORE = "table.load_more";
+  F.TOPIC.DATA_TABLE.SHOW_COLUMN = "table.show_col";
+  F.TOPIC.DATA_TABLE.HIDE_COLUMN = "table.hide_col";
+  F.TOPIC.DATA_TABLE.RELOAD = "table.reload";
 
   var App = Fractal.App.extend({
     init: function(){
