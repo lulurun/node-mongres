@@ -13,6 +13,7 @@
   ],
   "dependencies": {
     "fractaljs": "~1.0.1",
-    "jquery-autosize": "~1.18.9"
+    "jquery-autosize": "~1.18.9",
+    "bootstrap": "~3.2.0"
   }
 }
