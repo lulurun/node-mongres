@@ -203,8 +203,12 @@ var setup = function(app, prefix, connect) {
       doc = JSON.parse(doc, DocParser);
     }
     delete doc._id;
+    var id = req.params.docid;
+    if (id.match(/^[0-9a-f]{24}$/)) {
+      id = new ObjectID(id);
+    }
     req.mongodb.col.update(
-      {_id: new ObjectID(req.params.docid)},
+      {_id: id},
       {$set: doc},
       function(err, result) {
         res.json(result);
@@ -229,8 +233,12 @@ var setup = function(app, prefix, connect) {
 
   // get document
   app.get(URI.DOC, function(req, res, next) {
+    var id = req.params.docid;
+    if (id.match(/^[0-9a-f]{24}$/)) {
+      id = new ObjectID(id);
+    }
     req.mongodb.col.findOne(
-      {_id: new ObjectID(req.params.docid)},
+      {_id: id},
       function(err, doc) {
         var json = JSON.stringify(doc);
         res.send(json);

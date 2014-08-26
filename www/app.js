@@ -153,8 +153,6 @@
 
   var App = Fractal.App.extend({
     init: function(){
-      this.DOM_PARSER = "bower_components/jquery/dist/jquery.min.js";
-      this.TEMPLATE_ENGINE = "bower_components/hogan/web/builds/2.0.0/hogan-2.0.0.js";
       this.PREFIX = {
         component: "components/",
         template: "templates/",

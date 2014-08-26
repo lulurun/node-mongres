@@ -44,7 +44,7 @@ F(function(){
         path += "/databases/" + F.env.db;
         path += "/collections/" + F.env.col;
         path += "/documents/" + F.env.doc;
-        console.log("AAAAA", path);
+
         F.require(path, function(data){
           var text = JSON.stringify(data, null, "  ");
           var rows = text.split("\n").length;

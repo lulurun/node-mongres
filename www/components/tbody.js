@@ -101,7 +101,11 @@ F("tbody", F.Components.table_part.extend({
       self.data = {
         records: records,
         idString: function(){
-          return this._id.substr(10, 24);
+          if (this._id.indexOf("ObjectID('") === 0) {
+            return this._id.substr(10, 24);
+          } else {
+            return this._id;
+          }
         }
       };
 
