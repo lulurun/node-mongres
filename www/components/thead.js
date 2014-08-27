@@ -15,7 +15,9 @@ F("thead", F.Components.table_part.extend({
           fields: data.map(function(v){
             return {
               value: v,
-              parts: v.split("."),
+              parts: v.split(".").map(function(name, index){
+                return {name: name, index: index};
+              }),
               classValue: MONGRES.col2Class(v),
               hide: hide(v),
             };
@@ -33,10 +35,23 @@ F("thead", F.Components.table_part.extend({
   },
   afterRender: function(cb) {
     var self = this;
-    self.$container.find(".btn-remove_col").click(function(){
-      var col = $(this).closest("th").data("value");
-      MONGRES.getColumnConfig().set(col, false);
-      self.publish(F.TOPIC.DATA_TABLE.HIDE_COLUMN, col);
+    self.$(".field-part").mouseenter(function(){
+      $(this).children(".btn-remove_col").css("opacity", "0.3");
+    }).mouseleave(function(){
+      $(this).children(".btn-remove_col").css("opacity", "0");
+    });
+    self.$(".btn-remove_col").click(function(){
+      var index = parseInt($(this).data("index"));
+      var name = $(this).data("name");
+      var i = 0, len = self.data.fields.length;
+      for (; i< len; ++i) {
+        var field = self.data.fields[i];
+        if (field.parts[index] && field.parts[index].name === name) {
+          MONGRES.getColumnConfig().set(field.value, false);
+          self.publish(F.TOPIC.DATA_TABLE.HIDE_COLUMN, field.value);
+        }
+      }
+
     });
     cb();
   },
