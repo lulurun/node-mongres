@@ -12,7 +12,7 @@ F("databases", F.Component.extend({
   },
   getData: function(cb) {
     var self = this;
-    F.require("connections/" + F.env.conn + "/databases", function(data){
+    F.require("conn/" + F.env.conn + "/db", function(data){
       if (data && data.err) {
         return F.next("connect");
       }

@@ -21,7 +21,7 @@ F("collections", F.Component.extend({
   getData: function(callback) {
     var self = this;
     F.require(
-      "connections/" + F.env.conn + "/databases/" + F.env.db + "/collections",
+      "conn/" + F.env.conn + "/db/" + F.env.db + "/col",
       function(data){
         if (data && data.err) {
           return Fractal.next("connect");

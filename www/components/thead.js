@@ -51,7 +51,6 @@ F("thead", F.Components.table_part.extend({
           self.publish(F.TOPIC.DATA_TABLE.HIDE_COLUMN, field.value);
         }
       }
-
     });
     cb();
   },

@@ -58,8 +58,8 @@ F("tbody", F.Components.table_part.extend({
     }
     if (param && param.reset) self.current = 0;
     self.options.skip = self.current;
-    var countQuery = "connections/" + F.env.conn + "/databases/" + F.env.db + "/collections/" + F.env.col;
-    var dataQuery = countQuery + "/documents?options=" + encodeURIComponent(JSON.stringify(self.options));
+    var countQuery = "conn/" + F.env.conn + "/db/" + F.env.db + "/col/" + F.env.col;
+    var dataQuery = countQuery + "/doc?options=" + encodeURIComponent(JSON.stringify(self.options));
     F.require([countQuery, dataQuery], function(data){
       var total = data[countQuery].count;
 

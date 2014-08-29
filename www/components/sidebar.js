@@ -9,7 +9,7 @@ F("sidebar", F.Component.extend({
   },
   getData: function(callback) {
     var self = this;
-    F.require("connections/" + F.env.conn + "/databases", function(data){
+    F.require("conn/" + F.env.conn + "/db", function(data){
       if (!data || data.err) {
         console.error("can not get db list", data);
         F.navigate("connect");
@@ -32,8 +32,8 @@ F("db", F.Component.extend({
   },
   getData: function(callback) {
     var self = this;
-    var query = "connections/" + Fractal.env.conn + "/databases/" +
-      self.dbname + "/collections";
+    var query = "conn/" + Fractal.env.conn + "/db/" +
+      self.dbname + "/col";
     Fractal.require(query, function(data){
       data.sort(function(a, b){ return a.name < b.name ? -1 : 1; });
       self.data = {

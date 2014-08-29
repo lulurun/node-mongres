@@ -43,10 +43,10 @@ F(function(){
     getData: function(cb){
       var self = this;
       if (F.env.doc) {
-        var path = "connections/" + F.env.conn;
-        path += "/databases/" + F.env.db;
-        path += "/collections/" + F.env.col;
-        path += "/documents/" + F.env.doc;
+        var path = "conn/" + F.env.conn;
+        path += "/db/" + F.env.db;
+        path += "/col/" + F.env.col;
+        path += "/doc/" + F.env.doc;
 
         F.require(path, function(data){
           var text = JSON.stringify(data, null, "  ");

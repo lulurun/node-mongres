@@ -41,28 +41,28 @@ F("contents", F.Components.Router.extend({
 
 F("buildInfo", F.Components.basicInfo.extend({
   title: "Build Info",
-  getQuery: function(){ return "connections/" + F.env.conn + "/buildInfo"; }
+  getQuery: function(){ return "conn/" + F.env.conn + "/buildInfo"; }
 }));
 
 F("serverStatus", F.Components.basicInfo.extend({
   title: "Server Status",
-  getQuery: function(){ return "connections/" + F.env.conn + "/serverStatus"; }
+  getQuery: function(){ return "conn/" + F.env.conn + "/serverStatus"; }
 }));
 
 F("replSetStatus", F.Components.basicInfo.extend({
   title: "ReplSet Status",
-  getQuery: function(){ return "connections/" + F.env.conn + "/replSetGetstatus"; }
+  getQuery: function(){ return "conn/" + F.env.conn + "/replSetGetstatus"; }
 }));
 
 F("dbStats", F.Components.basicInfo.extend({
   title: "DB Stats",
-  getQuery: function(){ return "connections/" + F.env.conn + "/databases/" + F.env.db; }
+  getQuery: function(){ return "conn/" + F.env.conn + "/db/" + F.env.db; }
 }));
 
 F("colStats", F.Components.basicInfo.extend({
   title: "Collection Stats",
   getQuery: function(){
-    return "connections/" + F.env.conn + "/databases/" + F.env.db + "/collections/" + F.env.col;
+    return "conn/" + F.env.conn + "/db/" + F.env.db + "/col/" + F.env.col;
   }
 }));
 

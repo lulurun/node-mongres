@@ -27,7 +27,7 @@ F("connect", F.Component.extend({
   getData: function(callback) {
     var self = this;
     self.data = self.lastConnected.getAll();
-    F.require("connections", function(data){
+    F.require("conn", function(data){
       self.data.conns = data;
       callback();
     });

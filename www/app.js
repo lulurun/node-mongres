@@ -44,36 +44,36 @@
       var client = {};
 
       client.connect = function(params, cb){
-        post("/api/connections", params, cb);
+        post("/api/conn", params, cb);
       };
 
       client.createCollection = function(connId, dbName, colName, cb){
-        var path = "/api/connections/";
-        path += connId + "/databases/";
-        path += dbName + "/collections";
+        var path = "/api/conn/";
+        path += connId + "/db/";
+        path += dbName + "/col";
         post(path, {name: colName}, cb);
       };
 
       client.dropCollection = function(connId, dbName, colName, cb){
-        var path = "/api/connections/" + connId;
-        path += "/databases/" + dbName + "/collections/" + colName;
+        var path = "/api/conn/" + connId;
+        path += "/db/" + dbName + "/col/" + colName;
         _delete(path, cb);
       };
 
       client.saveDoc = function(doc, cb) {
-        var path = "/api/connections/" + F.env.conn;
-        path += "/databases/" + F.env.db;
-        path += "/collections/" + F.env.col;
-        path += "/documents";
+        var path = "/api/conn/" + F.env.conn;
+        path += "/db/" + F.env.db;
+        path += "/col/" + F.env.col;
+        path += "/doc";
         if (F.env.doc) path += "/" + F.env.doc
         postPlain(path, doc, cb);
       };
 
       client.removeDocs = function(docs, cb) {
-        var path = "/api/connections/" + F.env.conn;
-        path += "/databases/" + F.env.db;
-        path += "/collections/" + F.env.col;
-        path += "/documents";
+        var path = "/api/conn/" + F.env.conn;
+        path += "/db/" + F.env.db;
+        path += "/col/" + F.env.col;
+        path += "/doc";
         if (docs.length === 1) {
           path += "/" + docs[0];
           _delete(path, cb);
