@@ -1,0 +1,29 @@
+#!/usr/bin/env node
+
+var express = require('express');
+var bodyParser = require('body-parser');
+var morgan = require('morgan');
+var mongres = require(__dirname + '/../lib');
+
+var app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.text());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(morgan("combined"));
+app.use(express.static(__dirname + "/../www"));
+app.use(function(req, res, next){
+  res.header('Content-Type', 'application/json');
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,HEAD,OPTIONS");
+  next();
+});
+
+app.use('/api', mongres.apps.conn());
+
+var port = process.argv[2] && parseInt(process.argv[2]);
+port = port || 8765;
+
+app.listen(port, function() {
+  console.log('listening on port', port);
+});
+

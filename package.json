@@ -1,0 +1,34 @@
+{
+  "name": "node-mongres",
+  "description": "REST API server/library for MongoDB",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:lulurun/node-mongres.git"
+  },
+  "keywords": [
+    "rest",
+    "api",
+    "mongodb",
+    "mongo",
+    "web",
+    "restful"
+  ],
+  "author": "lulurun@gmail.com",
+  "license": "MIT",
+  "homepage": "https://github.com/lulurun/node-mongres",
+  "dependencies": {
+    "express": "*",
+    "body-parser": "*",
+    "morgan": "*",
+    "mongodb": "*",
+    "log4js": "*"
+  },
+  "directories": {
+    "lib": "./lib"
+  },
+  "bin": {
+    "mongres": "./bin/mongres"
+  }
+}
+

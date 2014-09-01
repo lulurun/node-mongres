@@ -1,5 +1,4 @@
 var config = {};
-config.verbose = true;
 
 config.app = {};
 config.app.server_port = 8765;

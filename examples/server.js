@@ -20,12 +20,13 @@ app.use(function(req, res, next){
 });
 
 var getApp = function(cb){
-  var apps = require(__dirname + '/router').apps;
+  var mongres = require(__dirname + '/../lib');
+  var apps = mongres.apps;
   var storeConfig = config.store || {};
   if (!storeConfig.conn) {
     return cb(apps.conn());
   }
-  var store = require(__dirname + '/store.js').storel;
+  var store = mongres.store;
   store.connect(storeConfig.conn, function(err, connector){
     if (!storeConfig.db) {
       return cb(
@@ -52,8 +53,8 @@ var getApp = function(cb){
   });
 }
 
-getApp(function(mongoresApp){
-  app.use('/api', mongoresApp);
+getApp(function(mongresApp){
+  app.use('/api', mongresApp);
   app.listen(config.app.server_port, function() {
     logger.info('listening on port', config.app.server_port);
   });
