@@ -21,6 +21,13 @@ ObjectID.prototype.toJSON = function(){
 };
 
 var setup = exports.setup = function(prefix, getCollection, mountApp) {
+  if (typeof(getCollection) === 'object') {
+    mountApp = getCollection;
+    getCollection = null;
+  }
+  getCollection = getCollection || function(req, cb) {
+    cb(req.mongodb.col);
+  };
   prefix = prefix || 'documents';
   var app = express();
 
@@ -58,8 +65,10 @@ var setup = exports.setup = function(prefix, getCollection, mountApp) {
         return res.json({err: 'bad options'});
       }
     }
-    req.mongodb.col.find(query, options).toArray(function(err, docs) {
-      res.json(docs);
+    getCollection(req, function(col){
+      col.find(query, options).toArray(function(err, docs) {
+        res.json(docs);
+      });
     });
   });
 
@@ -69,8 +78,10 @@ var setup = exports.setup = function(prefix, getCollection, mountApp) {
     if (typeof(docs) === 'string') {
       docs = JSON.parse(docs, DocParser);
     }
-    req.mongodb.col.insert(docs, function(err, inserted) {
-      res.json(inserted);
+    getCollection(req, function(col){
+      col.insert(docs, function(err, inserted) {
+        res.json(inserted);
+      });
     });
   });
 
@@ -78,19 +89,21 @@ var setup = exports.setup = function(prefix, getCollection, mountApp) {
   app.delete(prefix, function(req, res, next) {
     var docIds = req.body;
     if (docIds && docIds.length) {
-      var nbRemoved = 0;
-      var total = docIds.length;
-      var complete = 0;
-      docIds.forEach(function(id){
-        req.mongodb.col.remove(
-          {_id: new ObjectID(id)},
-          function(err, nb) {
-            nbRemoved += nb;
-            if (++complete === total) {
-              res.json({removed: nbRemoved});
+      getCollection(req, function(col){
+        var nbRemoved = 0;
+        var total = docIds.length;
+        var complete = 0;
+        docIds.forEach(function(id){
+          col.remove(
+            {_id: new ObjectID(id)},
+            function(err, nb) {
+              nbRemoved += nb;
+              if (++complete === total) {
+                res.json({removed: nbRemoved});
+              }
             }
-          }
-        );
+          );
+        });
       });
     } else {
       next();
@@ -109,13 +122,16 @@ var setup = exports.setup = function(prefix, getCollection, mountApp) {
     if (id.match(/^[0-9a-f]{24}$/)) {
       id = new ObjectID(id);
     }
-    req.mongodb.col.update(
-      {_id: id},
-      {$set: doc},
-      function(err, result) {
-        res.json(result);
-      }
-    );
+
+    getCollection(req, function(col){
+      col.update(
+        {_id: id},
+        {$set: doc},
+        function(err, result) {
+          res.json(result);
+        }
+      );
+    });
   });
 
   // get document
@@ -124,23 +140,27 @@ var setup = exports.setup = function(prefix, getCollection, mountApp) {
     if (id.match(/^[0-9a-f]{24}$/)) {
       id = new ObjectID(id);
     }
-    req.mongodb.col.findOne(
-      {_id: id},
-      function(err, doc) {
-        var json = JSON.stringify(doc);
-        res.send(json);
-      }
-    );
+    getCollection(req, function(col){
+      col.findOne(
+        {_id: id},
+        function(err, doc) {
+          var json = JSON.stringify(doc);
+          res.send(json);
+        }
+      );
+    });
   });
 
   // delete 1 document
   app.delete(prefix, function(req, res, next) {
-    req.mongodb.col.remove(
-      {_id: new ObjectID(req.params.docId)},
-      function(err, nbRemoved) {
-        res.json({removed: nbRemoved});
-      }
-    );
+    getCollection(req, function(col){
+      col.remove(
+        {_id: new ObjectID(req.params.docId)},
+        function(err, nbRemoved) {
+          res.json({removed: nbRemoved});
+        }
+      );
+    });
   });
 
   if (mountApp) {

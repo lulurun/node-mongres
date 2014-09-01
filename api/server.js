@@ -19,21 +19,43 @@ app.use(function(req, res, next){
   next();
 });
 
-var router = require(__dirname + '/router');
+var getApp = function(cb){
+  var apps = require(__dirname + '/router').apps;
+  var storeConfig = config.store || {};
+  if (!storeConfig.conn) {
+    return cb(apps.conn());
+  }
+  var store = require(__dirname + '/store.js').storel;
+  store.connect(storeConfig.conn, function(err, connector){
+    if (!storeConfig.db) {
+      return cb(
+        apps.db(function(req, cb){
+          cb(connector.conn);
+        })
+      );
+    }
+    var db = connector.conn.db(storeConfig.db);
+    if (!storeConfig.col) {
+      return cb(
+        apps.col(function(req, cb){
+          cb(db);
+        })
+      );
+    }
+    db.collection(storeConfig.col, function(err, col){
+      return cb(
+        apps.doc(function(req, cb){
+          cb(col);
+        })
+      );
+    });
+  });
+}
 
-app.use(
-  '/api', router.connect.setup(
-    'conn', router.mongodb.setup(
-      'db', router.collection.setup(
-        'col', router.document.setup(
-          'doc', router.collection.getCollection
-        )
-      )
-    )
-  )
-);
-
-app.listen(config.app.server_port, function() {
-  logger.info('listening on port', config.app.server_port);
+getApp(function(mongoresApp){
+  app.use('/api', mongoresApp);
+  app.listen(config.app.server_port, function() {
+    logger.info('listening on port', config.app.server_port);
+  });
 });
 

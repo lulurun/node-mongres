@@ -48,24 +48,25 @@ var setup = exports.setup = function(prefix, mountApp) {
     } else {
       if (!req.mongodb) req.mongodb = {};
       req.mongodb.conn = conn;
-      req.mongodb.admin = conn.db('local').admin();
       next();
     }
   });
 
+  var getAdmin = function(req) { return req.mongodb.conn.db('local').admin(); };
+
   // get buildInfo
   app.get(prefix + '/buildInfo', function(req, res, next) {
-    req.mongodb.admin.buildInfo(function(err, result) { res.json(result); });
+    getAdmin(req).buildInfo(function(err, result) { res.json(result); });
   });
 
   // get serverStatus
   app.get(prefix + '/serverStatus', function(req, res, next) {
-    req.mongodb.admin.serverStatus(function(err, result) { res.json(result); });
+    getAdmin(req).serverStatus(function(err, result) { res.json(result); });
   });
 
   // get replSetGetStatus
   app.get(prefix + '/replSetGetStatus', function(req, res, next) {
-    req.mongodb.admin.replSetGetStatus(function(err, result) { res.json(result); });
+    getAdmin(req).replSetGetStatus(function(err, result) { res.json(result); });
   });
 
   if (mountApp) {
