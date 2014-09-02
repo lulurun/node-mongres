@@ -3,7 +3,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var morgan = require('morgan');
-var mongres = require(__dirname + '/../lib');
+var mongres = require(__dirname + '/..');
 
 var app = express();
 app.use(bodyParser.json());
