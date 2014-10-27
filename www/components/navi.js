@@ -1,9 +1,4 @@
 F("navi", F.Component.extend({
-  naviItems: {
-    conn: [{page: "connInfo"}],
-    db: [{page: "dbStats"}],
-    col: [{page: "data_table2"}]
-  },
   init: function(name, $container) {
     var self = this;
     self._super(name, $container);
@@ -26,12 +21,12 @@ F("navi", F.Component.extend({
     var self = this;
     var linkQuery = "";
     self.data = {};
-    for (var i in self.naviItems) {
-      if (F.env[i]) {
-        linkQuery += "&" + i + "=" + F.env[i];
-        self.data[i] = F.env[i];
+    ['conn', 'db', 'col'].forEach(function(v){
+      if (F.env[v]) {
+        linkQuery += "&" + v + "=" + F.env[v];
+        self.data[v] = F.env[v];
       }
-    }
+    });
     self.data.linkQuery = linkQuery;
     cb();
   }

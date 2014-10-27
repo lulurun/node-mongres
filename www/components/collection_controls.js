@@ -4,7 +4,7 @@ F("collection_controls", F.Component.extend({
     self._super(name, $container);
     self.subscribe(F.TOPIC.ENV_CHANGED, function(topic, data){
       if (data.page) {
-        if (F.env.page === "data_table2") self.load();
+        if (F.env.page === "documents") self.load();
         else if (self.data && self.data.enable) self.load();
       }
     });
@@ -16,7 +16,7 @@ F("collection_controls", F.Component.extend({
   },
   getData: function(cb){
     this.data = {
-      enable: F.env.page === "data_table2",
+      enable: F.env.page === "documents",
       conn: F.env.conn,
       db: F.env.db,
       col: F.env.col

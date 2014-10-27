@@ -1,5 +1,5 @@
 F(function(){
-  F("data_table2", F.Component.extend({
+  F("documents", F.Component.extend({
     getBtn: function(){ return this.$container.find(".btn-load_more"); },
     init: function(name, $container) {
       var self = this;
