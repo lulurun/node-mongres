@@ -83,3 +83,7 @@ see `examples` folder.
 API can be plugged into any Express based server at any path.
 see `examples` folder.
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/lulurun/node-mongres/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
