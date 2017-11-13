@@ -18,7 +18,9 @@ F("databases", F.Component.extend({
       }
       self.data = {
         databases: data.databases,
-        removable: function() { return this.name !== "local"; }
+        removable: function() {
+          return this.name !== "local" && this.name !== 'admin';
+        }
       };
       cb();
     });

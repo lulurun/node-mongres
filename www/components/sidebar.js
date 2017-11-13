@@ -39,12 +39,14 @@ F("db", F.Component.extend({
       self.data = {
         conn: Fractal.env.conn,
         db: self.dbname,
-        userdb: self.dbname != "local",
+        userdb: self.dbname !== 'local' && self.dbname !== 'admin',
         collections: data,
         colname: function(){
-          return  this.name.split(".").slice(1).join(".");
+          return this.name;
+          //return  this.name.split(".").slice(1).join(".");
         }
       };
+
       callback();
     });
   }

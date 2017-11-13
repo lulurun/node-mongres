@@ -4,6 +4,7 @@
   window.MONGRES = (function(){
     var client = (function(){
       function ajax(options, path, object, cb) {
+	      if (path.indexOf('/dev/mongres') < 0) path = '/dev/mongres' + path;
         var method = options.method || "POST";
         var contentType = options.contentType || "application/json";
 

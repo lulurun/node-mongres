@@ -10,7 +10,7 @@ F("collection_controls", F.Component.extend({
     });
   },
   afterRender: function(cb){
-    if (this.data.enable_search) {
+    if (this.data.enable) {
     }
     cb();
   },

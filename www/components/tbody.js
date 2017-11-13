@@ -4,7 +4,7 @@ F("tbody", F.Components.table_part.extend({
     self._super(name, $container);
     self.fieldByName = {};
     self.current = 0;
-    self.options = {limit: 10};
+    self.options = {limit: 100};
     self.subscribe(F.TOPIC.DATA_TABLE.RELOAD, function(topic, data){
       self.load({reset: true});
     });

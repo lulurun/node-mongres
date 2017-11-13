@@ -21,7 +21,7 @@ app.use(function(req, res, next){
 app.use('/api', mongres.apps.conn());
 
 var port = process.argv[2] && parseInt(process.argv[2]);
-port = port || 8765;
+port = port || 9001;
 
 app.listen(port, function() {
   console.log('listening on port', port);

@@ -1,11 +1,14 @@
 <a class="list-group-item" href="#dbStats&conn={{conn}}&db={{db}}">
   <h4>{{db}}</h4>
+  {{^userdb}}
+  <i>(system db)</i>
+  {{/userdb}}
 </a>
+{{#userdb}}
 {{#collections}}
 <a class="list-group-item"
    href="#documents&conn={{conn}}&db={{db}}&col={{colname}}">
   {{colname}}
 </a>
 {{/collections}}
-
-
+{{/userdb}}
